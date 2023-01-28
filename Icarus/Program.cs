@@ -1,6 +1,8 @@
 using Icarus.Data;
 using Icarus.Discord;
 
+using Microsoft.Extensions.Configuration.Json;
+
 namespace Icarus
 {
     public class Program
@@ -8,6 +10,7 @@ namespace Icarus
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Configuration.AddJsonFile("config.json", optional: false, reloadOnChange: false);
 
             // Add services to the container.
             builder.Services.AddRazorPages();

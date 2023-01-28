@@ -6,17 +6,17 @@ namespace Icarus.Discord
     {
         DiscordClient Client;
 
-        public DiscordBotService(ILogger<DiscordBotService> logger)
+        public DiscordBotService(ILogger<DiscordBotService> logger, IConfiguration config)
         {
             logger.LogInformation("Booting DSharpPlus...");
 
             Client = new DiscordClient(new DiscordConfiguration()
             {
-                AlwaysCacheMembers= true,
-                AutoReconnect = true,
                 Intents = DiscordIntents.All,
                 LargeThreshold = 10000,
-                LoggerFactory = new LoggerFactory(new List<ILoggerProvider> { new LogMessageDiverter<DiscordBotService>(logger) })
+                LoggerFactory = new LoggerFactory(new List<ILoggerProvider> { new LogMessageDiverter<DiscordBotService>(logger) }),
+                MessageCacheSize = 4096,
+                Token = config[""]
             });
         }
     }
