@@ -1,7 +1,5 @@
 using Icarus.Data;
-
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
+using Icarus.Discord;
 
 namespace Icarus
 {
@@ -15,8 +13,10 @@ namespace Icarus
             builder.Services.AddRazorPages();
             builder.Services.AddServerSideBlazor();
             builder.Services.AddSingleton<WeatherForecastService>();
+            builder.Services.AddSingleton<DiscordBotService>();
 
             var app = builder.Build();
+            app.Services.GetService<DiscordBotService>();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
