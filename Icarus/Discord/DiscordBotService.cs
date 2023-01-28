@@ -8,7 +8,7 @@ namespace Icarus.Discord
 
         public DiscordBotService(ILogger<DiscordBotService> logger, IConfiguration config)
         {
-            logger.LogInformation("Booting DSharpPlus...");
+            logger.LogInformation("Booting DSharpPlus... - ");
 
             Client = new DiscordClient(new DiscordConfiguration()
             {
@@ -16,7 +16,7 @@ namespace Icarus.Discord
                 LargeThreshold = 10000,
                 LoggerFactory = new LoggerFactory(new List<ILoggerProvider> { new LogMessageDiverter<DiscordBotService>(logger) }),
                 MessageCacheSize = 4096,
-                Token = config[""]
+                Token = config["discord:token"]
             });
         }
     }
