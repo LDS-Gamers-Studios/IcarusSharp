@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
@@ -11,6 +11,7 @@
     <PackageReference Include="DSharpPlus.Interactivity" Version="4.3.0" />
     <PackageReference Include="DSharpPlus.SlashCommands" Version="4.3.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.2" />
+    <PackageReference Include="MySql.EntityFrameworkCore" Version="6.0.10" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
   </ItemGroup>
 
@@ -18,6 +19,10 @@
     <Content Update="config.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\" />
   </ItemGroup>
 
 </Project>

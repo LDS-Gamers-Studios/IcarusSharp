@@ -1,4 +1,7 @@
 ﻿using DSharpPlus;
+using DSharpPlus.SlashCommands;
+
+using System.Reflection;
 
 namespace Icarus.Discord
 {
@@ -16,8 +19,22 @@ namespace Icarus.Discord
                 LargeThreshold = 10000,
                 LoggerFactory = new LoggerFactory(new List<ILoggerProvider> { new LogMessageDiverter<DiscordBotService>(logger) }),
                 MessageCacheSize = 4096,
-                Token = config["discord:token"]
+                Token = config["discord:token"],
             });
+
+            var slash = Client.UseSlashCommands(new SlashCommandsConfiguration()
+            {
+                Services = new ServiceCollection()
+                    .AddSingleton(config)
+                    .AddSingleton<ILogger>(logger)
+                    .AddScoped<IcarusDbContext>()
+                    .AddLogging(a => a.AddProvider(new LogMessageDiverter<DiscordBotService>(logger)))
+                    .BuildServiceProvider()
+            });
+
+            slash.RegisterCommands(Assembly.GetExecutingAssembly(), ulong.Parse(config["discord:ldsg"]));
+
+            Client.ConnectAsync().Wait();
         }
     }
 }

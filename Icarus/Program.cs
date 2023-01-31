@@ -13,6 +13,7 @@ namespace Icarus
             builder.Configuration.AddJsonFile("config.json", optional: false, reloadOnChange: false);
 
             // Add services to the container.
+            builder.Services.AddScoped<IcarusDbContext>();
             builder.Services.AddRazorPages();
             builder.Services.AddServerSideBlazor();
             builder.Services.AddSingleton<WeatherForecastService>();
