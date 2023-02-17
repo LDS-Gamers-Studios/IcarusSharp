@@ -8,10 +8,12 @@ namespace Icarus.Discord.Commands
     public partial class Admin : ApplicationCommandModule
     {
         ILogger Logger;
+        IcarusDbContext IcarusDbContext;
 
-        public Admin(ILogger logger)
+        public Admin(ILogger logger, IcarusDbContext dbContext)
         {
             Logger = logger;
+            IcarusDbContext = dbContext;
         }
     }
 }

@@ -1,10 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Icarus.Models;
+
+using Microsoft.EntityFrameworkCore;
 
 namespace Icarus
 {
     public class IcarusDbContext : DbContext
     {
         IConfiguration configuration;
+        public DbSet<Member> Member { get; set; }
 
         public IcarusDbContext(IConfiguration config)
         {
