@@ -27,7 +27,7 @@ namespace Icarus.Discord.Commands
                 [Option("name", "The tag name the user will call upon")]string name,
                 [Option("content", "Tag text")]string content = null,
                 [Option("attachment", "The file to attach. If embed, must be image.")]DiscordAttachment attachment = null,
-                [Option("embed", "Post the tag in an embed?")]bool embed = true)
+                [Option("embed", "Post the tag in an embed?")]bool embed = false)
             {
                 await ctx.DeferAsync();
 

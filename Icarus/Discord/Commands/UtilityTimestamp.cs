@@ -23,7 +23,7 @@ namespace Icarus.Discord.Commands
                         .WithTitle("Failed To Generate Timestamp")
                         .WithDescription("Invalid number of arguments for 'in' mode.");
 
-                    await ctx.CreateResponseAsync(embedError, true);
+                    await ctx.CreateResponseAsync(embedError, false);
                     return;
                 }
 
@@ -36,7 +36,7 @@ namespace Icarus.Discord.Commands
                         .WithTitle("Failed To Generate Timestamp")
                         .WithDescription("Invalid duration.");
 
-                    await ctx.CreateResponseAsync(embedError, true);
+                    await ctx.CreateResponseAsync(embedError, false);
                     return;
                 }
 
@@ -74,7 +74,7 @@ namespace Icarus.Discord.Commands
                         .WithTitle("Failed To Generate Timestamp")
                         .WithDescription("Invalid unit. Must be second(s), minute(s), hour(s), day(s), week(s), month(s), year(s).");
 
-                    await ctx.CreateResponseAsync(embedError, true);
+                    await ctx.CreateResponseAsync(embedError, false);
                     return;
                 }
             }
@@ -91,7 +91,7 @@ namespace Icarus.Discord.Commands
                         .WithTitle("Failed To Generate Timestamp")
                         .WithDescription("I didn't understand your input.");
 
-                    await ctx.CreateResponseAsync(embedError, true);
+                    await ctx.CreateResponseAsync(embedError, false);
                     return;
                 }
             }
@@ -104,7 +104,7 @@ namespace Icarus.Discord.Commands
                 .AddField("Input", data, true)
                 .AddField("Format", ((TimestampFormat)format).ToString(), true);
 
-            await ctx.CreateResponseAsync(embed, true);
+            await ctx.CreateResponseAsync(embed, false);
         }
 
         public enum TimestampFormatIcarus : int
