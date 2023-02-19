@@ -8,6 +8,8 @@ namespace Icarus
     {
         IConfiguration configuration;
         public DbSet<Member> Member { get; set; }
+        public DbSet<Tag> Tag { get; set; }
+        public DbSet<Flag> Flag { get; set; }
 
         public IcarusDbContext(IConfiguration config)
         {

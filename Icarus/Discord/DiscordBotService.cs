@@ -1,5 +1,6 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Entities;
+using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.SlashCommands.EventArgs;
 
@@ -14,7 +15,7 @@ namespace Icarus.Discord
     public class DiscordBotService
     {
         DiscordClient Client;
-        IConfiguration Configuration;
+        public static IConfiguration Configuration;
         ILogger Logger;
 
         public DiscordBotService(ILogger<DiscordBotService> logger, IConfiguration config)
@@ -43,11 +44,13 @@ namespace Icarus.Discord
                     .BuildServiceProvider()
             });
 
+            Client.UseInteractivity();
+
             slash.SlashCommandErrored += Slash_SlashCommandErrored;
             slash.ContextMenuErrored += Slash_ContextMenuErrored;
             slash.AutocompleteErrored += Slash_AutocompleteErrored;
 
-            slash.RegisterCommands(Assembly.GetExecutingAssembly(), ulong.Parse(config["discord:ldsg"]));
+            slash.RegisterCommands(Assembly.GetExecutingAssembly(), ulong.Parse(config["discord:guild"]));
 
 
             RegisterEvents();
