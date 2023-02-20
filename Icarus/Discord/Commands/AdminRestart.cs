@@ -7,7 +7,6 @@ namespace Icarus.Discord.Commands
     public partial class Admin : ApplicationCommandModule
     {
         [SlashCommand("restart", "Restarts the bot.")]
-        [SlashRequireUserPermissions(Permissions.ManageGuild, false)]
         public async Task RestartCommand(InteractionContext ctx)
         {
             Logger.LogWarning("Disconnecting bot on slash command.");

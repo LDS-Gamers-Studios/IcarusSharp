@@ -66,13 +66,27 @@ namespace Icarus.Discord
         private async Task Slash_ContextMenuErrored(SlashCommandsExtension sender, ContextMenuErrorEventArgs e)
         {
             await InteractionError(e.Exception, e.Context.QualifiedName, e.Context.User.Mention, e.Context.Channel.Mention);
-            await e.Context.CreateResponseAsync("I've run into an error. I've let my devs know.", true);
+            try
+            {
+                await e.Context.CreateResponseAsync("I've run into an error. I've let my devs know.", true);
+            }
+            catch
+            {
+                await e.Context.EditResponseAsync("I've run into an error. I've let my devs know.");
+            }
         }
 
         private async Task Slash_SlashCommandErrored(SlashCommandsExtension sender, SlashCommandErrorEventArgs e)
         {
             await InteractionError(e.Exception, e.Context.QualifiedName, e.Context.User.Mention, e.Context.Channel.Mention);
-            await e.Context.CreateResponseAsync("I've run into an error. I've let my devs know.", true);
+            try
+            {
+                await e.Context.CreateResponseAsync("I've run into an error. I've let my devs know.", true);
+            }
+            catch
+            {
+                await e.Context.EditResponseAsync("I've run into an error. I've let my devs know.");
+            }
         }
 
         private async Task InteractionError(Exception exception, string command, string user, string channel)

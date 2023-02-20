@@ -52,7 +52,7 @@ namespace Icarus
             var components = new List<DiscordComponent>()
             {
                 new DiscordButtonComponent(ButtonStyle.Success, t.ToString(), "Confirm", emoji: new DiscordComponentEmoji("✅")),
-                new DiscordButtonComponent(ButtonStyle.Danger, f.ToString(), "Cancel", emoji: new DiscordComponentEmoji("❌"))
+                new DiscordButtonComponent(ButtonStyle.Danger, f.ToString(), "Cancel", emoji: new DiscordComponentEmoji("✖"))
             };
 
             var msg = await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(embed).AddComponents(components));
@@ -89,9 +89,9 @@ namespace Icarus
                 .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
-        public static Task<DiscordMessage> EditResponseAsync(this InteractionContext ctx, string content) =>
+        public static Task<DiscordMessage> EditResponseAsync(this BaseContext ctx, string content) =>
             ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent(content));
-        public static Task<DiscordMessage> EditResponseAsync(this InteractionContext ctx, DiscordEmbedBuilder e) =>
+        public static Task<DiscordMessage> EditResponseAsync(this BaseContext ctx, DiscordEmbedBuilder e) =>
             ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(e));
     }
 }

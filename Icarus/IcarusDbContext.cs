@@ -10,6 +10,8 @@ namespace Icarus
         public DbSet<Member> Member { get; set; }
         public DbSet<Tag> Tag { get; set; }
         public DbSet<Flag> Flag { get; set; }
+        public DbSet<Filter> Filter { get; set; }
+        public DbSet<FilterException> FilterException { get; set; }
 
         public IcarusDbContext(IConfiguration config)
         {
