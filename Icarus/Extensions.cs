@@ -39,6 +39,20 @@ namespace Icarus
             .WithTimestamp(DateTimeOffset.Now)
             .WithFooter("Icarus 6 Alpha");
 
+        public static async Task Error(this InteractionContext ctx, string title, string desc, params string[] fields)
+        {
+            var e = ctx.IcarusEmbed()
+                .WithTitle(title)
+                .WithDescription(desc)
+                .WithColor(DiscordColor.Red);
+
+            fields.Chunk(2).ToList().ForEach(ch =>
+            {
+                e = e.AddField(ch[0], ch[1], true);
+            });
+            await ctx.EditResponseAsync(e);
+        }
+
         public static async Task<bool> ConfirmAction(this InteractionContext ctx, string title, string desc)
         {
             var embed = ctx.IcarusEmbed()

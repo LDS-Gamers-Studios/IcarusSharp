@@ -48,12 +48,7 @@ namespace Icarus.Discord.Commands
 
                     if (existingFilter.Type == type)
                     {
-                        var e2 = ctx.IcarusEmbed()
-                            .WithColor(DiscordColor.Red)
-                            .WithTitle("Failed To Add To Filter")
-                            .WithDescription("That text is already in the filter with that type.")
-                            .AddField("Exceptions", exCount.ToString());
-                        await ctx.EditResponseAsync(e2);
+                        await ctx.Error("Failed To Add To Filter", "That text is already in the filter with that type.", "Exceptions", exCount.ToString());
                         return;
                     }
                     else
@@ -90,11 +85,7 @@ namespace Icarus.Discord.Commands
 
                 if (existingFilter is null)
                 {
-                    var e2 = ctx.IcarusEmbed()
-                        .WithColor(DiscordColor.Red)
-                        .WithTitle("Failed To Remove From Filter")
-                        .WithDescription("I was unable to find that filter text already set.");
-                    await ctx.EditResponseAsync(e2);
+                    await ctx.Error("Failed To Remove From Filter", "I was unable to find that filter text already set.");
                     return;
                 }
 

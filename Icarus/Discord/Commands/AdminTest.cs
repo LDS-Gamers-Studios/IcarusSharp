@@ -12,11 +12,9 @@ namespace Icarus.Discord.Commands
         [SlashCommand("test", "Runs the test command")]
         public async Task Test(InteractionContext ctx, [Option("a", "a")]string input)
         {
-            var start = DateTime.Now;
-            var f = Utility.FilterConvert(input);
-            var seconds = (DateTime.Now - start).TotalSeconds;
+            await ctx.DeferAsync();
 
-            await ctx.CreateResponseAsync(seconds + " - " + f);
+            await ctx.Error("Failed To Run Error Test", "Task failed successfully??", "f1", "v1", "f2", "v2");
         }
     }
 }
