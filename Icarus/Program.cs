@@ -1,4 +1,3 @@
-using Icarus.Data;
 using Icarus.Discord;
 
 using Microsoft.Extensions.Configuration.Json;
@@ -16,7 +15,6 @@ namespace Icarus
             builder.Services.AddScoped<IcarusDbContext>();
             builder.Services.AddRazorPages();
             builder.Services.AddServerSideBlazor();
-            builder.Services.AddSingleton<WeatherForecastService>();
             builder.Services.AddSingleton<DiscordBotService>();
 
             var app = builder.Build();
