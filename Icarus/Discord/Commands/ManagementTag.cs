@@ -32,35 +32,26 @@ namespace Icarus.Discord.Commands
 
                 name = Regex.Replace(name.ToLower(), @"\s+", "");
 
-                var mem = IcarusDbContext.IcarusMember(ctx);
-
                 if ((content is null || content.Length == 0) && attachment is null)
                 {
-                    var e2 = ctx.IcarusEmbed()
-                        .WithColor(DiscordColor.Red)
-                        .WithTitle("Failed to create tag.")
-                        .WithDescription("The tag must have either content or an attachment.");
-                    await ctx.EditResponseAsync(e2);
+                    await ctx.Error("Failed To Create Tag", "The tag must have either content or an attachment.");
                     return;
                 }
 
-                var foundTag = IcarusDbContext.Tag.FirstOrDefault(t => t.Name == name);
-                if (foundTag is not null)
+                var existingTag = IcarusDbContext.Tag.FirstOrDefault(t => t.Name == name);
+                if (existingTag is not null)
                 {
-                    if (await ctx.ConfirmAction("This tag already exists.", "Overwrite?\n\nTag name: " + name))
-                    {
-                        IcarusDbContext.Tag.Remove(foundTag);
-                    }
-                    else
+                    if (!await ctx.ConfirmAction("This tag already exists.", "Overwrite?\n\nTag name: " + name))
                     {
                         return;
                     }
+                    IcarusDbContext.Tag.Remove(existingTag);
                 }
 
                 if (content is not null) { content = content.Replace("{nl}", "\n"); }
                 IcarusDbContext.Tag.Add(new Tag()
                 {
-                    CreatedBy = mem,
+                    CreatedBy = IcarusDbContext.IcarusMember(ctx),
                     CreatedAt = DateTime.Now,
                     AttachmentURL = attachment?.Url,
                     Content = content,
@@ -86,14 +77,10 @@ namespace Icarus.Discord.Commands
 
                 name = Regex.Replace(name.ToLower(), @"\s+", "");
 
-                var foundTag = IcarusDbContext.Tag.FirstOrDefault(t => t.Name == name);
-                if (foundTag is null)
+                var existingTag = IcarusDbContext.Tag.FirstOrDefault(t => t.Name == name);
+                if (existingTag is null)
                 {
-                    var e2 = ctx.IcarusEmbed()
-                        .WithColor(DiscordColor.Red)
-                        .WithTitle("Failed To Delete Tag")
-                        .WithDescription($"I was unable to find a tag with the name `{name}`.");
-                    await ctx.EditResponseAsync(e2);
+                    await ctx.Error("Failed To Delete Tag", $"I was unable to find a tag with the name `{name}`.");
                     return;
                 }
 
@@ -102,7 +89,7 @@ namespace Icarus.Discord.Commands
                     return;
                 }
 
-                IcarusDbContext.Tag.Remove(foundTag);
+                IcarusDbContext.Tag.Remove(existingTag);
                 IcarusDbContext.SaveChanges();
 
                 var e = ctx.IcarusEmbed()
@@ -113,14 +100,13 @@ namespace Icarus.Discord.Commands
 
             public class TagAutocompleteProvider : IAutocompleteProvider
             {
-                public async Task<IEnumerable<DiscordAutoCompleteChoice>> Provider(AutocompleteContext ctx)
-                {
-                    return 
-                        (new IcarusDbContext(DiscordBotService.Configuration)).Tag
+                public Task<IEnumerable<DiscordAutoCompleteChoice>> Provider(AutocompleteContext ctx) =>
+                    Task.FromResult(
+                        new IcarusDbContext(DiscordBotService.Configuration).Tag
                         .Where(t => t.Name.Contains(ctx.OptionValue.ToString()))
                         .Select(t => new DiscordAutoCompleteChoice(t.Name, t.Name))
-                        .ToList();
-                }
+                        .AsEnumerable()
+                    );
             }
         }
     }
