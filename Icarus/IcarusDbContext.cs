@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Icarus
 {
-    public class IcarusDbContext : DbContext
+    public class DataContext : DbContext
     {
         IConfiguration configuration;
         public DbSet<Member> Member { get; set; }
@@ -13,7 +13,7 @@ namespace Icarus
         public DbSet<Filter> Filter { get; set; }
         public DbSet<FilterException> FilterException { get; set; }
 
-        public IcarusDbContext(IConfiguration config)
+        public DataContext(IConfiguration config)
         {
             configuration = config;
         }
@@ -22,7 +22,7 @@ namespace Icarus
         {
             if (optionsBuilder.IsConfigured) { return; }
             var conn = $"Server={configuration["sql:host"]};Port={configuration["sql:port"]};Database={configuration["sql:database"]};Uid={configuration["sql:username"]};Pwd={configuration["sql:password"]};";
-            optionsBuilder.UseMySQL(conn);
+            optionsBuilder.UseMySql(conn, ServerVersion.AutoDetect(conn));
         }
     }
 }

@@ -4,8 +4,6 @@ using DSharpPlus.SlashCommands;
 
 using Icarus.Models;
 
-using MySqlX.XDevAPI;
-
 namespace Icarus.Discord.Commands
 {
     public partial class Utility : ApplicationCommandModule
@@ -23,7 +21,7 @@ namespace Icarus.Discord.Commands
             var guildId = ulong.Parse(DiscordBotService.Configuration["discord:guild"]);
             var guild = client.Guilds[guildId];
 
-            var context = new IcarusDbContext(DiscordBotService.Configuration);
+            var context = new DataContext(DiscordBotService.Configuration);
 
             var loggedMembers = context.Member.Select(m => m.DiscordId).ToList();
 

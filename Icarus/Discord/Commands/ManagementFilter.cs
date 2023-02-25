@@ -14,11 +14,11 @@ namespace Icarus.Discord.Commands
         [SlashCommandGroup("filter", "Adjusts the moderation filter")]
         class ManagementFilter
         {
-            IcarusDbContext IcarusDbContext;
+            DataContext DataContext;
 
-            public ManagementFilter(IcarusDbContext db)
+            public ManagementFilter(DataContext db)
             {
-                IcarusDbContext = db;
+                DataContext = db;
             }
 
             [SlashCommand("add", "Add a filter entry")]
@@ -34,17 +34,17 @@ namespace Icarus.Discord.Commands
                 {
                     FilterText = filterText,
                     Type = type,
-                    AddedBy = IcarusDbContext.IcarusMember(ctx),
+                    AddedBy = DataContext.IcarusMember(ctx),
                     AddTime = DateTime.Now,
                     FilterTextConverted = Utility.FilterConvert(filterText),
                 };
 
-                var existingFilter = IcarusDbContext.Filter.FirstOrDefault(f => f.FilterText == filterText || f.FilterTextConverted == filter.FilterTextConverted);
+                var existingFilter = DataContext.Filter.FirstOrDefault(f => f.FilterText == filterText || f.FilterTextConverted == filter.FilterTextConverted);
 
                 var addedUpdated = "Added";
                 if (existingFilter is not null)
                 {
-                    var exCount = IcarusDbContext.Entry(existingFilter).Collection(f => f.FilterExceptions).Query().Count();
+                    var exCount = DataContext.Entry(existingFilter).Collection(f => f.FilterExceptions).Query().Count();
 
                     if (existingFilter.Type == type)
                     {
@@ -58,13 +58,13 @@ namespace Icarus.Discord.Commands
                             return;
                         }
 
-                        IcarusDbContext.Remove(existingFilter);
+                        DataContext.Remove(existingFilter);
                         addedUpdated = "Updated";
                     }
                 }
 
-                IcarusDbContext.Add(filter);
-                IcarusDbContext.SaveChanges();
+                DataContext.Add(filter);
+                DataContext.SaveChanges();
 
                 var e = ctx.IcarusEmbed()
                     .WithTitle("Added To Filter")
@@ -81,7 +81,7 @@ namespace Icarus.Discord.Commands
 
                 filterText = filterText.ToLower();
                 var converted = Utility.FilterConvert(filterText);
-                var existingFilter = IcarusDbContext.Filter.FirstOrDefault(f => f.FilterText == filterText || f.FilterTextConverted == converted);
+                var existingFilter = DataContext.Filter.FirstOrDefault(f => f.FilterText == filterText || f.FilterTextConverted == converted);
 
                 if (existingFilter is null)
                 {
@@ -89,7 +89,7 @@ namespace Icarus.Discord.Commands
                     return;
                 }
 
-                IcarusDbContext.Entry(existingFilter).Collection(f => f.FilterExceptions).Load();
+                DataContext.Entry(existingFilter).Collection(f => f.FilterExceptions).Load();
                 var exCount = existingFilter.FilterExceptions.Count;
 
                 if (!await ctx.ConfirmAction("Remove From Filter", $"Are you sure you'd like to remove ||{filterText}|| ({existingFilter.Type}) from the filter? It has {exCount} exception{(exCount != 1 ? "s" : "")}."))
@@ -97,9 +97,9 @@ namespace Icarus.Discord.Commands
                     return;
                 }
 
-                IcarusDbContext.FilterException.RemoveRange(existingFilter.FilterExceptions.ToArray());
-                IcarusDbContext.Filter.Remove(existingFilter);
-                IcarusDbContext.SaveChanges();
+                DataContext.FilterException.RemoveRange(existingFilter.FilterExceptions.ToArray());
+                DataContext.Filter.Remove(existingFilter);
+                DataContext.SaveChanges();
 
                 var e = ctx.IcarusEmbed()
                     .WithTitle("Removed Filter")

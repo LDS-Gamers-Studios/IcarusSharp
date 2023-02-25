@@ -39,7 +39,7 @@ namespace Icarus.Discord
                 Services = new ServiceCollection()
                     .AddSingleton(config)
                     .AddSingleton<ILogger>(logger)
-                    .AddScoped<IcarusDbContext>()
+                    .AddScoped<DataContext>()
                     .AddLogging(a => a.AddProvider(new LogMessageDiverter<DiscordBotService>(logger)))
                     .BuildServiceProvider()
             });

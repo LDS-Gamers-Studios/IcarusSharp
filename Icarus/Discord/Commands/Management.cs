@@ -7,13 +7,13 @@ namespace Icarus.Discord.Commands
     {
         ILogger Logger;
         IConfiguration Config;
-        IcarusDbContext IcarusDbContext;
+        DataContext DataContext;
 
-        public Management(ILogger logger, IConfiguration config, IcarusDbContext dbContext)
+        public Management(ILogger logger, IConfiguration config, DataContext dbContext)
         {
             Logger = logger;
             Config = config;
-            IcarusDbContext = dbContext;
+            DataContext = dbContext;
         }
     }
 }
