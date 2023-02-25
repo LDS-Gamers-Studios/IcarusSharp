@@ -9,6 +9,7 @@
     "port": "3306",
     "username": "",
     "password": "",
-    "database": "icarus"
+    "database": "icarus",
+    "autoMigrate": true
   }
 }

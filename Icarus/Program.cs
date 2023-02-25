@@ -21,10 +21,13 @@ namespace Icarus
             builder.Services.AddSingleton<DiscordBotService>();
             var app = builder.Build();
 
-            using (var scope = app.Services.CreateScope())
+            if (builder.Configuration["sql:autoMigrate"].ToLower() == "true")
             {
-                var db = scope.ServiceProvider.GetRequiredService<DataContext>();
-                db.Database.Migrate();
+                using (var scope = app.Services.CreateScope())
+                {
+                    var db = scope.ServiceProvider.GetRequiredService<DataContext>();
+                    db.Database.Migrate();
+                }
             }
 
             app.Services.GetService<DiscordBotService>();
