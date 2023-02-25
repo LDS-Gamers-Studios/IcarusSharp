@@ -14,11 +14,11 @@ namespace Icarus.Discord.Commands
         [SlashCommandGroup("tag", "Tag management")]
         class ManagementTag
         {
-            IcarusDbContext IcarusDbContext;
+            DataContext DataContext;
 
-            public ManagementTag(IcarusDbContext db)
+            public ManagementTag(DataContext db)
             {
-                IcarusDbContext = db;
+                DataContext = db;
             }
 
             [SlashCommand("create", "Creates a tag")]
@@ -38,27 +38,27 @@ namespace Icarus.Discord.Commands
                     return;
                 }
 
-                var existingTag = IcarusDbContext.Tag.FirstOrDefault(t => t.Name == name);
+                var existingTag = DataContext.Tag.FirstOrDefault(t => t.Name == name);
                 if (existingTag is not null)
                 {
                     if (!await ctx.ConfirmAction("This tag already exists.", "Overwrite?\n\nTag name: " + name))
                     {
                         return;
                     }
-                    IcarusDbContext.Tag.Remove(existingTag);
+                    DataContext.Tag.Remove(existingTag);
                 }
 
                 if (content is not null) { content = content.Replace("{nl}", "\n"); }
-                IcarusDbContext.Tag.Add(new Tag()
+                DataContext.Tag.Add(new Tag()
                 {
-                    CreatedBy = IcarusDbContext.IcarusMember(ctx),
+                    CreatedBy = DataContext.IcarusMember(ctx),
                     CreatedAt = DateTime.Now,
                     AttachmentURL = attachment?.Url,
                     Content = content,
                     IsEmbed = embed,
                     Name = name,
                 });
-                IcarusDbContext.SaveChanges();
+                DataContext.SaveChanges();
 
                 var e = ctx.IcarusEmbed()
                     .WithTitle("Tag Created")
@@ -77,7 +77,7 @@ namespace Icarus.Discord.Commands
 
                 name = Regex.Replace(name.ToLower(), @"\s+", "");
 
-                var existingTag = IcarusDbContext.Tag.FirstOrDefault(t => t.Name == name);
+                var existingTag = DataContext.Tag.FirstOrDefault(t => t.Name == name);
                 if (existingTag is null)
                 {
                     await ctx.Error("Failed To Delete Tag", $"I was unable to find a tag with the name `{name}`.");
@@ -89,8 +89,8 @@ namespace Icarus.Discord.Commands
                     return;
                 }
 
-                IcarusDbContext.Tag.Remove(existingTag);
-                IcarusDbContext.SaveChanges();
+                DataContext.Tag.Remove(existingTag);
+                DataContext.SaveChanges();
 
                 var e = ctx.IcarusEmbed()
                     .WithTitle("Tag Deleted")
@@ -102,7 +102,7 @@ namespace Icarus.Discord.Commands
             {
                 public Task<IEnumerable<DiscordAutoCompleteChoice>> Provider(AutocompleteContext ctx) =>
                     Task.FromResult(
-                        new IcarusDbContext(DiscordBotService.Configuration).Tag
+                        new DataContext(DiscordBotService.Configuration).Tag
                         .Where(t => t.Name.Contains(ctx.OptionValue.ToString()))
                         .Select(t => new DiscordAutoCompleteChoice(t.Name, t.Name))
                         .AsEnumerable()

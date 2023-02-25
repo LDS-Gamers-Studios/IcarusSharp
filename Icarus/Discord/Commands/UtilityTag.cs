@@ -26,7 +26,7 @@ namespace Icarus.Discord.Commands
             var mention = parts.Length > 1 ? Regex.IsMatch(parts[1], @"<@!*&*[0-9]+>") ? parts[1] : null : null;
             var remainder = parts.Length > 1 ? string.Join(' ', parts.Skip(1)) : null;
 
-            var db = new IcarusDbContext(DiscordBotService.Configuration);
+            var db = new DataContext(DiscordBotService.Configuration);
             var tag = db.Tag.FirstOrDefault(t => t.Name == cmd);
 
             if (tag is null) { return; }

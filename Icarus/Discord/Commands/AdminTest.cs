@@ -3,8 +3,6 @@ using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.SlashCommands.Attributes;
 
-using Google.Protobuf.WellKnownTypes;
-
 namespace Icarus.Discord.Commands
 {
     public partial class Admin : ApplicationCommandModule

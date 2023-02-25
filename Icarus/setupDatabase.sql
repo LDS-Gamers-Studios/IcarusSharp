@@ -3,6 +3,8 @@ CREATE TABLE `discordguildconfig` (
   `GuildId` bigint DEFAULT NULL,
   `Key` varchar(45) DEFAULT NULL,
   `Value` varchar(4096) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `SetByMemberId` int DEFAULT NULL,
+  `SetAt` datetime DEFAULT NULL,
   PRIMARY KEY (`DiscordGuildConfigId`),
   UNIQUE KEY `guildconfigid_UNIQUE` (`DiscordGuildConfigId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

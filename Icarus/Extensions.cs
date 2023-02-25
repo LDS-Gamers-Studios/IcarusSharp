@@ -20,7 +20,7 @@ namespace Icarus
                 .ToList();
         }
 
-        public static Member IcarusMember(this IcarusDbContext db, BaseContext ctx)
+        public static Member IcarusMember(this DataContext db, BaseContext ctx)
         {
             return db.Member.FirstOrDefault(mem => mem.DiscordId == ctx.Member.Id);
         }
