@@ -9,12 +9,12 @@ using System.Text.RegularExpressions;
 
 namespace Icarus.Discord.Commands
 {
-    public partial class Management : ApplicationCommandModule
+    public partial class Management
     {
         [SlashCommandGroup("filter", "Adjusts the moderation filter")]
         class ManagementFilter
         {
-            DataContext DataContext;
+            readonly DataContext DataContext;
 
             public ManagementFilter(DataContext db)
             {

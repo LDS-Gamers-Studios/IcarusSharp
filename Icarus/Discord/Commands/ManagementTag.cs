@@ -9,12 +9,12 @@ using System.Text.RegularExpressions;
 
 namespace Icarus.Discord.Commands
 {
-    public partial class Management : ApplicationCommandModule
+    public partial class Management
     {
         [SlashCommandGroup("tag", "Tag management")]
         class ManagementTag
         {
-            DataContext DataContext;
+            readonly DataContext DataContext;
 
             public ManagementTag(DataContext db)
             {

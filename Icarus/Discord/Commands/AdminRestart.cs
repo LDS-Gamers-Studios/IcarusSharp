@@ -4,7 +4,7 @@ using DSharpPlus.SlashCommands.Attributes;
 
 namespace Icarus.Discord.Commands
 {
-    public partial class Admin : ApplicationCommandModule
+    public partial class Admin
     {
         [SlashCommand("restart", "Restarts the bot.")]
         public async Task RestartCommand(InteractionContext ctx)

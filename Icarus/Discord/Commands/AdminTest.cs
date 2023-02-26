@@ -5,7 +5,7 @@ using DSharpPlus.SlashCommands.Attributes;
 
 namespace Icarus.Discord.Commands
 {
-    public partial class Admin : ApplicationCommandModule
+    public partial class Admin
     {
         [SlashCommand("test", "Runs the test command")]
         public async Task Test(InteractionContext ctx, [Option("a", "a")]string input)
