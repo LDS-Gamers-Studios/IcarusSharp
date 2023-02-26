@@ -4,7 +4,7 @@ using DSharpPlus.SlashCommands;
 
 namespace Icarus.Discord.Commands
 {
-    public partial class Utility : ApplicationCommandModule
+    public partial class Utility
     {
         [SlashCommand("timestamp", "Generate a timestamp")]
         public async Task Timestamp(InteractionContext ctx, 

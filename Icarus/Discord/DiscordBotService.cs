@@ -4,19 +4,16 @@ using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.SlashCommands.EventArgs;
 
-using Emzi0767.Utilities;
-
-using Microsoft.Extensions.Logging;
-
 using System.Reflection;
 
 namespace Icarus.Discord
 {
     public class DiscordBotService
     {
-        DiscordClient Client;
-        public static IConfiguration Configuration;
-        ILogger Logger;
+        readonly DiscordClient Client;
+        readonly ILogger Logger;
+
+        public static IConfiguration Configuration { get; private set; }
 
         public DiscordBotService(ILogger<DiscordBotService> logger, IConfiguration config)
         {
@@ -34,6 +31,9 @@ namespace Icarus.Discord
                 Token = config["discord:token"],
             });
 
+            Client.ClientErrored += Client_ClientErrored;
+            Client.SocketErrored += Client_SocketErrored;
+
             var slash = Client.UseSlashCommands(new SlashCommandsConfiguration()
             {
                 Services = new ServiceCollection()
@@ -43,29 +43,30 @@ namespace Icarus.Discord
                     .AddLogging(a => a.AddProvider(new LogMessageDiverter<DiscordBotService>(logger)))
                     .BuildServiceProvider()
             });
-
-            Client.UseInteractivity();
-
             slash.SlashCommandErrored += Slash_SlashCommandErrored;
             slash.ContextMenuErrored += Slash_ContextMenuErrored;
             slash.AutocompleteErrored += Slash_AutocompleteErrored;
-
             slash.RegisterCommands(Assembly.GetExecutingAssembly(), ulong.Parse(config["discord:guild"]));
 
+            Client.UseInteractivity();
 
             RegisterEvents();
 
             Client.ConnectAsync().Wait();
         }
 
-        private async Task Slash_AutocompleteErrored(SlashCommandsExtension sender, AutocompleteErrorEventArgs e)
-        {
-            await InteractionError(e.Exception, "Autocomplete", e.Context.User.Mention, e.Context.Channel.Mention);
-        }
+        private async Task Client_SocketErrored(DiscordClient sender, DSharpPlus.EventArgs.SocketErrorEventArgs e) =>
+            await ErrorHandler(e.Exception, "~", "~", "~");
+
+        private async Task Client_ClientErrored(DiscordClient sender, DSharpPlus.EventArgs.ClientErrorEventArgs e) =>
+            await ErrorHandler(e.Exception, "~", "~", "~");
+
+        private async Task Slash_AutocompleteErrored(SlashCommandsExtension sender, AutocompleteErrorEventArgs e) =>
+            await ErrorHandler(e.Exception, "Autocomplete - Field: " + e.Context.FocusedOption.Name, e.Context.User.Mention, e.Context.Channel.Mention);
 
         private async Task Slash_ContextMenuErrored(SlashCommandsExtension sender, ContextMenuErrorEventArgs e)
         {
-            await InteractionError(e.Exception, e.Context.QualifiedName, e.Context.User.Mention, e.Context.Channel.Mention);
+            await ErrorHandler(e.Exception, e.Context.QualifiedName, e.Context.User.Mention, e.Context.Channel.Mention);
             try
             {
                 await e.Context.CreateResponseAsync("I've run into an error. I've let my devs know.", true);
@@ -78,7 +79,7 @@ namespace Icarus.Discord
 
         private async Task Slash_SlashCommandErrored(SlashCommandsExtension sender, SlashCommandErrorEventArgs e)
         {
-            await InteractionError(e.Exception, e.Context.QualifiedName, e.Context.User.Mention, e.Context.Channel.Mention);
+            await ErrorHandler(e.Exception, e.Context.QualifiedName, e.Context.User.Mention, e.Context.Channel.Mention);
             try
             {
                 await e.Context.CreateResponseAsync("I've run into an error. I've let my devs know.", true);
@@ -89,7 +90,7 @@ namespace Icarus.Discord
             }
         }
 
-        private async Task InteractionError(Exception exception, string command, string user, string channel)
+        private async Task ErrorHandler(Exception exception, string command, string user, string channel)
         {
             var client = new DiscordWebhookClient();
             var webhook = await client.AddWebhookAsync(new Uri(Configuration["discord:webhook"]));
@@ -111,7 +112,7 @@ namespace Icarus.Discord
 
             await webhook.ExecuteAsync(new DiscordWebhookBuilder().AddEmbed(embed));
 
-            Logger.LogError($"Command error:\n\n{exception.Message}\n\n{exception}");
+            Logger.LogError("Command error:\n\n{exceptionMessage}\n\n{exception}", exception.Message, exception.ToString());
         }
 
         void RegisterEvents()
@@ -126,11 +127,10 @@ namespace Icarus.Discord
             foreach (var e in t.GetEvents())
             {
                 var hooks = eventAtt.Where(e2 => e2.Event == e.Name).ToList();
-                foreach (var hook in hooks)
+                foreach (var (m, _) in hooks)
                 {
                     Delegate handler =
-                         Delegate.CreateDelegate(e.EventHandlerType,
-                                                 hook.m);
+                         Delegate.CreateDelegate(e.EventHandlerType, m);
                     e.AddEventHandler(Client, handler);
                 }
             }

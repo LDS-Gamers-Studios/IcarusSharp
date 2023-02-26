@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 
 namespace Icarus.Discord.Commands
 {
-    public partial class Utility : ApplicationCommandModule
+    public partial class Utility
     {
         [DiscordEventHandler("MessageCreated")]
         public static async Task MessageCreated(DiscordClient sender, MessageCreateEventArgs e)
@@ -65,7 +65,7 @@ namespace Icarus.Discord.Commands
                     }
 
                     var file = Extensions.RandomString(10);
-                    using HttpClient client = new HttpClient();
+                    using var client = new HttpClient();
                     response = await client.GetAsync(tag.AttachmentURL);
                     streamToReadFrom = await response.Content.ReadAsStreamAsync();
                     msg.AddFile(Path.GetFileName(tag.AttachmentURL), streamToReadFrom);
