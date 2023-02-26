@@ -94,7 +94,7 @@ namespace Icarus
             return c;
         }
 
-        private static Random random = new Random();
+        private static readonly Random random = new();
 
         public static string RandomString(int length)
         {
