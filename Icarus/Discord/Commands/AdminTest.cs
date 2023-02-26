@@ -3,8 +3,11 @@ using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.SlashCommands.Attributes;
 
+using Icarus.ServerSettings;
+
 namespace Icarus.Discord.Commands
 {
+    [ServerSettingRequired("Admin:Test Channel", ServerSettingType.Channel)]
     public partial class Admin
     {
         [SlashCommand("test", "Runs the test command")]

@@ -2,7 +2,10 @@
   "discord": {
     "token": "",
     "guild": "",
-    "webhook": ""
+    "webhook": "",
+    "sudoPermitted": [
+      ""
+    ]
   },
   "sql": {
     "host": "127.0.0.1",
