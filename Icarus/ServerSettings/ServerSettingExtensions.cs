@@ -1,4 +1,5 @@
-﻿using DSharpPlus.Entities;
+﻿using DSharpPlus;
+using DSharpPlus.Entities;
 
 using Icarus.Discord;
 using Icarus.Models;
@@ -7,11 +8,11 @@ using System.Reflection;
 
 namespace Icarus.ServerSettings
 {
-    public static class ExtensionsServerConfig
+    public static class ServerSettingExtensions
     {
         public static readonly List<ServerSettingTemplate> Templates;
 
-        static ExtensionsServerConfig()
+        static ServerSettingExtensions()
         {
             Templates =
                 Assembly
@@ -118,6 +119,50 @@ namespace Icarus.ServerSettings
             };
             data.ServerSetting.Add(setting);
             data.SaveChanges();
+        }
+
+        public static DiscordChannel GetChannel(DiscordClient bot, DataContext data, IConfiguration config, string key)
+        {
+            var currentValue = data.ServerSetting.FirstOrDefault(s => s.Key == key);
+            if (currentValue is null) { return null; }
+            var guild = bot.Guilds[ulong.Parse(config["discord:guild"])];
+            var channelExists = guild.Channels.Any(c => c.Key.ToString() == currentValue.Value);
+            if (!channelExists) { return null; }
+            return guild.Channels.FirstOrDefault(c => c.Key.ToString() == currentValue.Value).Value;
+        }
+
+        public static DiscordRole GetRole(DiscordClient bot, DataContext data, IConfiguration config, string key)
+        {
+            var currentValue = data.ServerSetting.FirstOrDefault(s => s.Key == key);
+            if (currentValue is null) { return null; }
+            var guild = bot.Guilds[ulong.Parse(config["discord:guild"])];
+            var roleExists = guild.Roles.Any(c => c.Key.ToString() == currentValue.Value);
+            if (!roleExists) { return null; }
+            return guild.Roles.FirstOrDefault(c => c.Key.ToString() == currentValue.Value).Value;
+        }
+
+        public static DiscordMember GetMember(DiscordClient bot, DataContext data, IConfiguration config, string key)
+        {
+            var currentValue = data.ServerSetting.FirstOrDefault(s => s.Key == key);
+            if (currentValue is null) { return null; }
+            var guild = bot.Guilds[ulong.Parse(config["discord:guild"])];
+            var memberExists = guild.Members.Any(c => c.Key.ToString() == currentValue.Value);
+            if (!memberExists) { return null; }
+            return guild.Members.FirstOrDefault(c => c.Key.ToString() == currentValue.Value).Value;
+        }
+
+        public static string GetText(DataContext data, IConfiguration config, string key)
+        {
+            var currentValue = data.ServerSetting.FirstOrDefault(s => s.Key == key);
+            if (currentValue is null) { return null; }
+            return currentValue.Value;
+        }
+
+        public static float? GetDecimal(DataContext data, IConfiguration config, string key)
+        {
+            var currentValue = data.ServerSetting.FirstOrDefault(s => s.Key == key);
+            if (currentValue is null) { return null; }
+            return float.Parse(currentValue.Value);
         }
     }
 }

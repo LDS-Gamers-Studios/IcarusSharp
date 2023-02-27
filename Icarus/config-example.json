@@ -5,7 +5,11 @@
     "webhook": "",
     "sudoPermitted": [
       ""
-    ]
+    ],
+    "oauth": {
+      "clientId": "",
+      "clientSecret": ""
+    }
   },
   "sql": {
     "host": "127.0.0.1",

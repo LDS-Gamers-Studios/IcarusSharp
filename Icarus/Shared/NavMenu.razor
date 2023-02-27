@@ -1,4 +1,8 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using Icarus.Discord;
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">Icarus</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -8,17 +12,36 @@
 </div>
 
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <style>
+        .pfp {
+            border-radius: 50%;
+        }
+        .username {
+            color: white;
+        }
+    </style>
+
     <nav class="flex-column">
+        <div class="nav-item px-3">
+            <img class="pfp" src="@AvatarUrl" alt="Avatar" /> <span class="username">@Username</span>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="signout" Match="NavLinkMatch.All">
+                <span class="oi oi-account-logout" aria-hidden="true"></span> Sign Out
+            </NavLink>
+        </div>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
                 <span class="oi oi-home" aria-hidden="true"></span> Home
             </NavLink>
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="guildsettings">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Guild Settings
-            </NavLink>
-        </div>
+        <AuthorizeView Roles="Manager">
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="guildsettings">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Guild Settings
+                </NavLink>
+            </div>
+        </AuthorizeView>
     </nav>
 </div>
 
@@ -26,6 +49,16 @@
     private bool collapseNavMenu = true;
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    string AvatarUrl = "";
+    string Username = "";
+
+    protected override async void OnInitialized()
+    {
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        AvatarUrl = user.Claims.First(c => c.Type == "urn:discord:avatar:url").Value + "?size=32";
+        Username = user.Identity.Name;
+    }
 
     private void ToggleNavMenu()
     {

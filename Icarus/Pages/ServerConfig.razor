@@ -1,4 +1,5 @@
 ﻿@page "/guildsettings"
+@attribute [Authorize(Roles = "Manager")]
 
 @using DSharpPlus.Entities;
 @using Icarus.Discord;
@@ -17,10 +18,8 @@
     <thead>
         <tr>
             <th>Name</th>
-            <th>Type</th>
             <th>Value</th>
             <th>Preview</th>
-            <th>Updated At</th>
         </tr>
     </thead>
     <tbody>
@@ -33,15 +32,19 @@
             @foreach (var data in group)
             {
                 <tr>
-                    <td>@data.Item1.Name.Split(':')[1]</td>
-                    <td>@data.Item1.Type</td>
+                    <td><span class="oi @(
+                            data.Item1.Type == ServerSettingType.Channel ? "oi-chat" :
+                            data.Item1.Type == ServerSettingType.Role ? "oi-people" :
+                            data.Item1.Type == ServerSettingType.User ? "oi-person" :
+                            data.Item1.Type == ServerSettingType.Text ? "oi-align-left" :
+                            data.Item1.Type == ServerSettingType.Decimal ? "oi-calculator" : ""
+                        )" aria-hidden="true"></span> @data.Item1.Name.Split(':')[1]</td>
                     <td>
                         <input type="text" id="input-@data.Item1.Name" name="input-@data.Item1.Name" value="@data.Item2?.Value" @oninput="(e) => OnInput(e, data.Item1.Name)"/>
                     </td>
                     <td>
                         @data.Item3
                     </td>
-                    <td>@data.Item2?.UpdatedAt</td>
                 </tr>
             }
         }
@@ -51,16 +54,15 @@
 @code {
     List<IGrouping<string, (ServerSettingTemplate, ServerSetting, string)>> ConfigData;
 
-    protected override Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        ConfigData = ExtensionsServerConfig.LoadConfigValues(DataContext, Bot, Config);
-        return Task.CompletedTask;
+        ConfigData = ServerSettingExtensions.LoadConfigValues(DataContext, Bot, Config);
     }
 
     void OnInput(ChangeEventArgs e, string key)
     {
 
-        ExtensionsServerConfig.Set(key, e.Value.ToString(), Bot, DataContext, Config);
-        ConfigData = ExtensionsServerConfig.LoadConfigValues(DataContext, Bot, Config);
+        ServerSettingExtensions.Set(key, e.Value.ToString(), Bot, DataContext, Config);
+        ConfigData = ServerSettingExtensions.LoadConfigValues(DataContext, Bot, Config);
     }
 }

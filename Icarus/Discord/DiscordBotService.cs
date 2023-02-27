@@ -10,6 +10,8 @@ namespace Icarus.Discord
 {
     public class DiscordBotService
     {
+        public static DiscordBotService Instance;
+
         public readonly DiscordClient Client;
         readonly ILogger Logger;
 
@@ -17,6 +19,7 @@ namespace Icarus.Discord
 
         public DiscordBotService(ILogger<DiscordBotService> logger, IConfiguration config)
         {
+            Instance = this;
             Logger = logger;
 
             Configuration = config;
