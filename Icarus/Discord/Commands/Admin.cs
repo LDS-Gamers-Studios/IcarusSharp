@@ -1,7 +1,5 @@
 ﻿using DSharpPlus.SlashCommands;
 
-using Icarus.ServerSettings;
-
 namespace Icarus.Discord.Commands
 {
     [SlashCommandGroup("admin", "Bot administrators only.", false)]
