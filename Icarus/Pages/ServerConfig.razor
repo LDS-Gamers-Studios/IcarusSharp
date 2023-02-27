@@ -1,49 +1,68 @@
-﻿@page "/serverconfig"
+﻿@page "/guildsettings"
+@attribute [Authorize(Roles = "Manager")]
+
+@using DSharpPlus.Entities;
+@using Icarus.Discord;
+@using Icarus.ServerSettings;
+@using Icarus.Models
+
 @inject DataContext DataContext
+@inject DiscordBotService Bot
+@inject IConfiguration Config
 
-<PageTitle>Server Config</PageTitle>
-@*
-@using Icarus.Data
-@inject WeatherForecastService ForecastService*@
+<PageTitle>Server Settings</PageTitle>
 
-<h1>Weather forecast</h1>
+<h1>Server Settings</h1>
 
-<p>This component demonstrates fetching data from a service.</p>
-@*
-@if (forecasts == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{*@
-    <table class="table">
-        <thead>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Value</th>
+            <th>Preview</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var group in ConfigData)
+        {
             <tr>
-                <th>Date</th>
-                <th>Temp. (C)</th>
-                <th>Temp. (F)</th>
-                <th>Summary</th>
+                <td colspan="5"><h3>@group.Key</h3></td>
             </tr>
-        </thead>
-        <tbody>
-@*            @foreach (var forecast in forecasts)
+            
+            @foreach (var data in group)
             {
                 <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
-                    <td>@forecast.Summary</td>
+                    <td><span class="oi @(
+                            data.Item1.Type == ServerSettingType.Channel ? "oi-chat" :
+                            data.Item1.Type == ServerSettingType.Role ? "oi-people" :
+                            data.Item1.Type == ServerSettingType.User ? "oi-person" :
+                            data.Item1.Type == ServerSettingType.Text ? "oi-align-left" :
+                            data.Item1.Type == ServerSettingType.Decimal ? "oi-calculator" : ""
+                        )" aria-hidden="true"></span> @data.Item1.Name.Split(':')[1]</td>
+                    <td>
+                        <input type="text" id="input-@data.Item1.Name" name="input-@data.Item1.Name" value="@data.Item2?.Value" @oninput="(e) => OnInput(e, data.Item1.Name)"/>
+                    </td>
+                    <td>
+                        @data.Item3
+                    </td>
                 </tr>
-            }*@
-        </tbody>
-    </table>@*
-}*@
+            }
+        }
+    </tbody>
+</table>
 
 @code {
-    //private WeatherForecast[]? forecasts;
+    List<IGrouping<string, (ServerSettingTemplate, ServerSetting, string)>> ConfigData;
 
-    //protected override async Task OnInitializedAsync()
-    //{
-    //    forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
-    //}
+    protected override void OnInitialized()
+    {
+        ConfigData = ServerSettingExtensions.LoadConfigValues(DataContext, Bot, Config);
+    }
+
+    void OnInput(ChangeEventArgs e, string key)
+    {
+
+        ServerSettingExtensions.Set(key, e.Value.ToString(), Bot, DataContext, Config);
+        ConfigData = ServerSettingExtensions.LoadConfigValues(DataContext, Bot, Config);
+    }
 }

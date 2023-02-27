@@ -10,13 +10,16 @@ namespace Icarus.Discord
 {
     public class DiscordBotService
     {
-        readonly DiscordClient Client;
+        public static DiscordBotService Instance;
+
+        public readonly DiscordClient Client;
         readonly ILogger Logger;
 
         public static IConfiguration Configuration { get; private set; }
 
         public DiscordBotService(ILogger<DiscordBotService> logger, IConfiguration config)
         {
+            Instance = this;
             Logger = logger;
 
             Configuration = config;
@@ -56,10 +59,10 @@ namespace Icarus.Discord
         }
 
         private async Task Client_SocketErrored(DiscordClient sender, DSharpPlus.EventArgs.SocketErrorEventArgs e) =>
-            await ErrorHandler(e.Exception, "~", "~", "~");
+            await ErrorHandler(e.Exception, null, null, null);
 
         private async Task Client_ClientErrored(DiscordClient sender, DSharpPlus.EventArgs.ClientErrorEventArgs e) =>
-            await ErrorHandler(e.Exception, "~", "~", "~");
+            await ErrorHandler(e.Exception, null, null, null);
 
         private async Task Slash_AutocompleteErrored(SlashCommandsExtension sender, AutocompleteErrorEventArgs e) =>
             await ErrorHandler(e.Exception, "Autocomplete - Field: " + e.Context.FocusedOption.Name, e.Context.User.Mention, e.Context.Channel.Mention);
@@ -104,13 +107,22 @@ namespace Icarus.Discord
                 .WithTitle("An error occured!")
                 .WithDescription(desc)
                 .AddField("Exception", exception.GetType().Name, true)
-                .AddField("Message", exception.Message, true)
-                .AddField("Command Run", command, true)
-                .AddField("User", user, true)
-                .AddField("Channel", channel, true)
-                .Build();
+                .AddField("Message", exception.Message, true);
 
-            await webhook.ExecuteAsync(new DiscordWebhookBuilder().AddEmbed(embed));
+            if (command is not null)
+            {
+                embed = embed.AddField("Command Run", command, true);
+            }
+            if (user is not null)
+            {
+                embed = embed.AddField("User", user, true);
+            }
+            if (channel is not null)
+            {
+                embed = embed.AddField("Channel", channel, true);
+            }
+
+            await webhook.ExecuteAsync(new DiscordWebhookBuilder().AddEmbed(embed.Build()));
 
             Logger.LogError("Command error:\n\n{exceptionMessage}\n\n{exception}", exception.Message, exception.ToString());
         }

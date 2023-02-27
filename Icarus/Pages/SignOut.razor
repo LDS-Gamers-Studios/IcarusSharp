@@ -1,0 +1,16 @@
+﻿@page "/signout"
+@using Microsoft.AspNetCore.Authentication;
+@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Identity;
+@inject NavigationManager NavManager
+
+<PageTitle>Sign Out</PageTitle>
+
+<h1>Signing Out...</h1>
+
+@code {
+    protected override void OnInitialized()
+    {
+        NavManager.NavigateTo("/?logout=1", true);
+    }
+}

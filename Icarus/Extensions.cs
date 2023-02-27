@@ -71,15 +71,13 @@ namespace Icarus
 
             var msg = await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(embed).AddComponents(components));
 
-            var res = await msg.WaitForButtonAsync(i => i.Id == f.ToString() || i.Id == t.ToString());
+            var res = await msg.WaitForButtonAsync(i => i.Id == f.ToString() || i.Id == t.ToString() && i.User.Id == ctx.User.Id, TimeSpan.FromSeconds(5));
             if (res.TimedOut)
             {
                 embed.Title = "[CANCELED] " + embed.Title;
                 embed.Color = DiscordColor.Gray;
 
-                await res.Result.Interaction.CreateResponseAsync(InteractionResponseType.UpdateMessage, new DiscordInteractionResponseBuilder().AddEmbed(embed));
-
-
+                await msg.ModifyAsync(new DiscordMessageBuilder().WithEmbed(embed));
                 return false;
             }
 
