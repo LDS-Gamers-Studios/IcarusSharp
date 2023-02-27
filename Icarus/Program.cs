@@ -20,6 +20,8 @@ namespace Icarus
             var builder = WebApplication.CreateBuilder(args);
             builder.Configuration.AddJsonFile("config.json", optional: false, reloadOnChange: false);
 
+            Extensions.VersionText = builder.Configuration["versionText"];
+
             // Add services to the container
             builder.Services.AddAuthentication(options =>
             {

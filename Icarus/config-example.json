@@ -18,5 +18,6 @@
     "password": "",
     "database": "icarus",
     "autoMigrate": true
-  }
+  },
+  "versionText":  "Icarus 6 Alpha"
 }
