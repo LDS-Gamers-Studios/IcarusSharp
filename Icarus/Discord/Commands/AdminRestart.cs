@@ -1,6 +1,4 @@
-﻿using DSharpPlus;
-using DSharpPlus.SlashCommands;
-using DSharpPlus.SlashCommands.Attributes;
+﻿using DSharpPlus.SlashCommands;
 
 namespace Icarus.Discord.Commands
 {

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 using System.Globalization;
+using System.Reflection;
 using System.Security.Claims;
 
 namespace Icarus
