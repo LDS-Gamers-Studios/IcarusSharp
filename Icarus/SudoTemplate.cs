@@ -30,9 +30,8 @@ namespace Icarus
     {
         public static void Main() { }
 
-        public object Out { get; set; }
-        public DiscordMessage Msg { get; set; }
-        public Exception Ex { get; set; }
+        public object Out { get; private set; } // Data to be returned
+        public DiscordMessage Msg { get; set; } // Message that ran the sudo command, mostly for channel reference
 
         public async Task Sudo()
         {

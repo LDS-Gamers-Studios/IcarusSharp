@@ -32,7 +32,6 @@ namespace Icarus.Discord.Commands
             var template = File.ReadAllText("SudoTemplate.cs");
             code = template.Replace("{input}", code);
 
-
             var compileStartedAt = DateTime.Now;
             var compiled = Compiler.Compile(code, out var diagnostics, out var success);
             var compileTime = (DateTime.Now - compileStartedAt).TotalMilliseconds;
@@ -59,7 +58,7 @@ namespace Icarus.Discord.Commands
                 .AddField("Input Code", $"```cs\n{initialCode}\n```", false)
                 .AddField("Compile Time", compileTime + "ms", true)
                 .WithColor(DiscordColor.White);
-            var msg = await e.Channel.SendMessageAsync(embed);
+            var msg = await e.Message.RespondAsync(embed);
 
             var timeStarted = DateTime.Now;
             double? runtime = null;
@@ -81,9 +80,9 @@ namespace Icarus.Discord.Commands
                 embed = embed.WithColor(DiscordColor.Green)
                     .WithTitle("Success")
                     .AddField("Runtime", runtime + "ms", true);
-                if (result is not null)
+                if (result is not null && result.ToString().Trim() != "")
                 {
-                    embed = embed.WithDescription(result.ToString());
+                    embed = embed.WithDescription(result.ToString().Trim());
                 }
 
                 await msg.ModifyAsync(embed.Build());

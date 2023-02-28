@@ -4,21 +4,26 @@ using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.SlashCommands.EventArgs;
 
+using System.Net.WebSockets;
 using System.Reflection;
 
 namespace Icarus.Discord
 {
     public class DiscordBotService
     {
-        public static DiscordBotService Instance;
+        public static DiscordBotService Instance { get; private set; }
+        public static IConfiguration Configuration { get; private set; }
 
         public readonly DiscordClient Client;
-        readonly ILogger Logger;
+        public DateTime StartTime;
+        public List<DateTime> MessagesSinceStart = new List<DateTime>();
+        public List<(string, DateTime)> CommandsSinceStart = new List<(string, DateTime)>();
 
-        public static IConfiguration Configuration { get; private set; }
+        readonly ILogger Logger;
 
         public DiscordBotService(ILogger<DiscordBotService> logger, IConfiguration config)
         {
+            StartTime = DateTime.Now;
             Instance = this;
             Logger = logger;
 
@@ -36,12 +41,14 @@ namespace Icarus.Discord
 
             Client.ClientErrored += Client_ClientErrored;
             Client.SocketErrored += Client_SocketErrored;
+            Client.MessageCreated += Client_MessageCreated;
 
             var slash = Client.UseSlashCommands(new SlashCommandsConfiguration()
             {
                 Services = new ServiceCollection()
                     .AddSingleton(config)
                     .AddSingleton<ILogger>(logger)
+                    .AddSingleton(this)
                     .AddScoped<DataContext>()
                     .AddLogging(a => a.AddProvider(new LogMessageDiverter<DiscordBotService>(logger)))
                     .BuildServiceProvider()
@@ -49,6 +56,7 @@ namespace Icarus.Discord
             slash.SlashCommandErrored += Slash_SlashCommandErrored;
             slash.ContextMenuErrored += Slash_ContextMenuErrored;
             slash.AutocompleteErrored += Slash_AutocompleteErrored;
+            slash.SlashCommandInvoked += Slash_SlashCommandInvoked;
             slash.RegisterCommands(Assembly.GetExecutingAssembly(), ulong.Parse(config["discord:guild"]));
 
             Client.UseInteractivity();
@@ -56,6 +64,18 @@ namespace Icarus.Discord
             RegisterEvents();
 
             Client.ConnectAsync().Wait();
+        }
+
+        private Task Client_MessageCreated(DiscordClient sender, DSharpPlus.EventArgs.MessageCreateEventArgs e)
+        {
+            MessagesSinceStart.Add(DateTime.Now);
+            return Task.CompletedTask;
+        }
+
+        private Task Slash_SlashCommandInvoked(SlashCommandsExtension sender, SlashCommandInvokedEventArgs e)
+        {
+            CommandsSinceStart.Add((e.Context.QualifiedName, DateTime.Now));
+            return Task.CompletedTask;
         }
 
         private async Task Client_SocketErrored(DiscordClient sender, DSharpPlus.EventArgs.SocketErrorEventArgs e) =>
@@ -95,6 +115,8 @@ namespace Icarus.Discord
 
         private async Task ErrorHandler(Exception exception, string command, string user, string channel)
         {
+            if (exception is WebSocketException) { return; }
+
             var client = new DiscordWebhookClient();
             var webhook = await client.AddWebhookAsync(new Uri(Configuration["discord:webhook"]));
 

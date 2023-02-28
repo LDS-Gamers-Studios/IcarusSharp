@@ -9,6 +9,8 @@ namespace Icarus
 {
     public static class Extensions
     {
+        public static string VersionText { get; set; }
+
         public static List<DiscordActionRowComponent> CreateRows(this List<(string id, string text, ulong emote, ButtonStyle style)> buttons)
         {
             var buttonData = buttons.Count > 25 ? buttons.Take(25) : buttons;
@@ -30,14 +32,14 @@ namespace Icarus
             .WithColor(new DiscordColor("ff8a00"))
             .WithAuthor(ctx.Member.Username, null, ctx.Member.GetAvatarUrl(ImageFormat.Png, 128))
             .WithTimestamp(DateTimeOffset.Now)
-            .WithFooter("Icarus 6 Alpha");
+            .WithFooter(VersionText);
 
         public static DiscordEmbedBuilder IcarusEmbed(this DiscordMessage ctx) =>
             new DiscordEmbedBuilder()
             .WithColor(new DiscordColor("ff8a00"))
             .WithAuthor(ctx.Author.Username, null, ctx.Author.GetAvatarUrl(ImageFormat.Png, 128))
             .WithTimestamp(DateTimeOffset.Now)
-            .WithFooter("Icarus 6 Alpha");
+            .WithFooter(VersionText);
 
         public static async Task Error(this InteractionContext ctx, string title, string desc, params string[] fields)
         {

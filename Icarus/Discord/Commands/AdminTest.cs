@@ -11,6 +11,7 @@ namespace Icarus.Discord.Commands
     {
         [SlashCommand("test", "Runs the test command")]
         [ServerSettingRequired("Admin:Channel To Post In", ServerSettingType.Channel)]
+        [ServerSettingRequired("Admin:Some test setting", ServerSettingType.Channel)]
         public async Task Test(InteractionContext ctx, [Option("a", "a")]string input)
         {
             var c = ServerSettingExtensions.GetChannel(ctx.Client, DataContext, Config, "Admin:Channel To Post In");

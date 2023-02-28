@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 using System.Globalization;
+using System.Reflection;
 using System.Security.Claims;
 
 namespace Icarus
@@ -19,6 +20,8 @@ namespace Icarus
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.Configuration.AddJsonFile("config.json", optional: false, reloadOnChange: false);
+
+            Extensions.VersionText = builder.Configuration["versionText"];
 
             // Add services to the container
             builder.Services.AddAuthentication(options =>

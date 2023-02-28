@@ -3,7 +3,7 @@
         <Found Context="routeData">
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
                 <NotAuthorized>
-                    Not Authorized
+                    <p role="alert">Sorry, there's nothing at this address.</p>
                 </NotAuthorized>
             </AuthorizeRouteView>
         </Found>
