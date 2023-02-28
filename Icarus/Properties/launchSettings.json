@@ -2,6 +2,7 @@
   "profiles": {
     "Icarus": {
       "commandName": "Project",
+      "commandLineArgs": "\"config.json\"",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

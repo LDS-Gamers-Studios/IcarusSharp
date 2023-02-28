@@ -11,6 +11,7 @@
     <Compile Remove="SudoTemplate.cs" />
   </ItemGroup>
 
+	
   <ItemGroup>
     <Content Remove="config.json" />
   </ItemGroup>
@@ -36,6 +37,12 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.2" />
     <PackageReference Include="System.CodeDom" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="config.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

@@ -9,6 +9,10 @@
 
 .navbar-brand {
     font-size: 1.1rem;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .oi {
@@ -23,30 +27,30 @@
     padding-bottom: 0.5rem;
 }
 
-    .nav-item:first-of-type {
-        padding-top: 1rem;
-    }
+.nav-item:first-of-type {
+    padding-top: 1rem;
+}
 
-    .nav-item:last-of-type {
-        padding-bottom: 1rem;
-    }
+.nav-item:last-of-type {
+    padding-bottom: 1rem;
+}
 
-    .nav-item ::deep a {
-        color: #d7d7d7;
-        border-radius: 4px;
-        height: 3rem;
-        display: flex;
-        align-items: center;
-        line-height: 3rem;
-    }
+.nav-item ::deep a {
+    color: white;
+    border-radius: 4px;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    line-height: 3rem;
+}
 
 .nav-item ::deep a.active {
-    background-color: rgba(255,255,255,0.25);
+    background-color: rgba(255,255,255,0.4);
     color: white;
 }
 
 .nav-item ::deep a:hover {
-    background-color: rgba(255,255,255,0.1);
+    background-color: rgba(255,255,255,.2);
     color: white;
 }
 
@@ -59,4 +63,37 @@
         /* Never collapse the sidebar for wide screens */
         display: block;
     }
+}
+
+.pfp {
+    border-radius: 50%;
+    margin-left: 0.7rem;
+    margin-right: 0.2rem;
+}
+
+.username {
+    color: white;
+}
+
+.grouping {
+    color: white;
+    margin: auto;
+    text-align: center;
+}
+
+.grouping-inner {
+    font-size: 1.1rem;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.grouping-inner:before,
+.grouping-inner:after {
+    content: "";
+    flex: 1 1;
+    border-bottom: 2px solid white;
+    margin: auto;
+    margin-left: .5rem;
+    margin-right: .5rem;
 }

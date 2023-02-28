@@ -3,7 +3,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 <div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
+    <div class="container-fluid brand-container">
         <a class="navbar-brand" href="">Icarus</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
@@ -12,28 +12,9 @@
 </div>
 
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-    <style>
-        .pfp {
-            border-radius: 50%;
-        }
-
-        .username {
-            color: white;
-        }
-
-        .grouping {
-            color: white;
-        }
-    </style>
-
     <nav class="flex-column">
-        <div class="nav-item px-3">
-            <img class="pfp" src="@AvatarUrl" alt="Avatar" /> <span class="username">@Username</span>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="signout" Match="NavLinkMatch.All">
-                <span class="oi oi-account-logout" aria-hidden="true"></span> Sign Out
-            </NavLink>
+        <div class="nav-item px-3 grouping">
+            <span class="grouping-inner">Welcome</span>
         </div>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
@@ -61,8 +42,8 @@
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="store" Match="NavLinkMatch.All">
-                <span class="oi oi-dollar" aria-hidden="true"></span> Store
+            <NavLink class="nav-link" href="redeem" Match="NavLinkMatch.All">
+                <span class="oi oi-dollar" aria-hidden="true"></span> Redemption
             </NavLink>
         </div>
         <div class="nav-item px-3">
@@ -77,8 +58,8 @@
         </div>
         <AuthorizeView Roles="Manager">
 
-            <div class="nav-item px-3">
-                <span class="group">Manager Access</span>
+            <div class="nav-item px-3 grouping">
+                <span class="grouping-inner">Manager Access</span>
             </div>
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="guildsettings">
@@ -101,6 +82,17 @@
                 </NavLink>
             </div>
         </AuthorizeView>
+        <div class="nav-item px-3 grouping">
+            <span class="grouping-inner">Account</span>
+        </div>
+        <div class="nav-item px-3">
+            <img class="pfp" src="@AvatarUrl" alt="Avatar" /> <span class="username">@Username</span>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="signout" Match="NavLinkMatch.All">
+                <span class="oi oi-account-logout" aria-hidden="true"></span> Sign Out
+            </NavLink>
+        </div>
     </nav>
 </div>
 

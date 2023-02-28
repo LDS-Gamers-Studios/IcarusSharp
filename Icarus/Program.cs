@@ -19,7 +19,14 @@ namespace Icarus
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            builder.Configuration.AddJsonFile("config.json", optional: false, reloadOnChange: false);
+            //builder.WebHost.ConfigureKestrel(options =>
+            //{
+            //    options.ConfigureEndpointDefaults(listenOptions =>
+            //    {
+            //        listenOptions.
+            //    });
+            //});
+            builder.Configuration.AddJsonFile(args[0], optional: false, reloadOnChange: false);
 
             Extensions.VersionText = builder.Configuration["versionText"];
 
@@ -50,6 +57,8 @@ namespace Icarus
                         var guild = DiscordBotService.Instance.Client.Guilds[ulong.Parse(builder.Configuration["discord:guild"])];
                         var member = guild.Members.FirstOrDefault(m => m.Key.ToString() == id).Value;
                         var manager = member.Permissions.HasFlag(DSharpPlus.Permissions.ManageGuild);
+
+                        DiscordBotService.Instance.Logger.LogError("DEBUG - Detected Sign In: " + user.GetString("id"));
 
                         return manager ? "Manager" : "";
                     });

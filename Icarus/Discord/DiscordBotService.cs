@@ -19,7 +19,7 @@ namespace Icarus.Discord
         public List<DateTime> MessagesSinceStart = new List<DateTime>();
         public List<(string, DateTime)> CommandsSinceStart = new List<(string, DateTime)>();
 
-        readonly ILogger Logger;
+        public readonly ILogger Logger;
 
         public DiscordBotService(ILogger<DiscordBotService> logger, IConfiguration config)
         {

@@ -19,7 +19,6 @@
         <tr>
             <th>Name</th>
             <th>Value</th>
-            <th>Preview</th>
         </tr>
     </thead>
     <tbody>
@@ -32,7 +31,7 @@
             @foreach (var data in group)
             {
                 <tr>
-                    <td><span class="oi @(
+                    <td><span class="space-right oi @(
                             data.Item1.Type == ServerSettingType.Channel ? "oi-chat" :
                             data.Item1.Type == ServerSettingType.Role ? "oi-people" :
                             data.Item1.Type == ServerSettingType.User ? "oi-person" :
@@ -40,10 +39,7 @@
                             data.Item1.Type == ServerSettingType.Decimal ? "oi-calculator" : ""
                         )" aria-hidden="true"></span> @data.Item1.Name.Split(':')[1]</td>
                     <td>
-                        <input type="text" id="input-@data.Item1.Name" name="input-@data.Item1.Name" value="@data.Item2?.Value" @oninput="(e) => OnInput(e, data.Item1.Name)"/>
-                    </td>
-                    <td>
-                        @data.Item3
+                        <input class="@(data.Item3 is not null ? "goodBorder" : "badBorder")" type="text" id="input-@data.Item1.Name" name="input-@data.Item1.Name" value="@data.Item2?.Value" @oninput="(e) => OnInput(e, data.Item1.Name)"/>
                     </td>
                 </tr>
             }
@@ -53,10 +49,12 @@
 
 @code {
     List<IGrouping<string, (ServerSettingTemplate, ServerSetting, string)>> ConfigData;
+    DiscordGuild Guild;
 
     protected override void OnInitialized()
     {
         ConfigData = ServerSettingExtensions.LoadConfigValues(DataContext, Bot, Config);
+        Guild = Bot.Client.Guilds[ulong.Parse(Config["discord:guild"])];
     }
 
     void OnInput(ChangeEventArgs e, string key)
