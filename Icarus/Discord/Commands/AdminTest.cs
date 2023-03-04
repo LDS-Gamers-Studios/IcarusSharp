@@ -3,22 +3,32 @@ using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.SlashCommands.Attributes;
 
-using Icarus.ServerSettings;
+using Icarus.ServerSetting;
 
 namespace Icarus.Discord.Commands
 {
     public partial class Admin
     {
         [SlashCommand("test", "Runs the test command")]
-        [ServerSettingRequired("Admin:Channel To Post In", ServerSettingType.Channel)]
-        [ServerSettingRequired("Admin:Some test setting", ServerSettingType.Channel)]
         public async Task Test(InteractionContext ctx, [Option("a", "a")]string input)
         {
-            var c = ServerSettingExtensions.GetChannel(ctx.Client, DataContext, Config, "Admin:Channel To Post In");
-
             await ctx.DeferAsync();
 
-            await ctx.EditResponseAsync(ctx.IcarusEmbed().WithDescription("Channel: " + (c?.Mention ?? "None")));
+            var e = ctx.IcarusEmbed()
+                .WithTitle("Cake Day Members");
+
+            var members = DataContext.Config_Integer(ServerSettings.Management_CakeDayMembers);
+            if (members is null)
+            {
+                e = e.WithDescription("No member count is set.")
+                    .WithColor(DiscordColor.Yellow);
+            }
+            else
+            {
+                e = e.WithDescription($"Member count is set to {members}.");
+            }
+
+            await ctx.EditResponseAsync(e);
         }
     }
 }

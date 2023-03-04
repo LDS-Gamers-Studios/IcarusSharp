@@ -1,9 +1,9 @@
-﻿@page "/guildsettings"
+﻿@page "/settings"
 @attribute [Authorize(Roles = "Manager")]
 
 @using DSharpPlus.Entities;
 @using Icarus.Discord;
-@using Icarus.ServerSettings;
+@using Icarus.ServerSetting;
 @using Icarus.Models
 
 @inject DataContext DataContext
@@ -37,9 +37,9 @@
                             data.Item1.Type == ServerSettingType.User ? "oi-person" :
                             data.Item1.Type == ServerSettingType.Text ? "oi-align-left" :
                             data.Item1.Type == ServerSettingType.Decimal ? "oi-calculator" : ""
-                        )" aria-hidden="true"></span> @data.Item1.Name.Split(':')[1]</td>
+                        )" aria-hidden="true"></span> @data.Item1.Name</td>
                     <td>
-                        <input class="@(data.Item3 is not null ? "goodBorder" : "badBorder")" type="text" id="input-@data.Item1.Name" name="input-@data.Item1.Name" value="@data.Item2?.Value" @oninput="(e) => OnInput(e, data.Item1.Name)"/>
+                        <input class="@(data.Item3 is not null ? "goodBorder" : "badBorder")" type="text" id="input-@data.Item1.Name" name="input-@data.Item1.Name" value="@data.Item2?.Value" @oninput="(e) => OnInput(e, data.Item1.Key)"/>
                     </td>
                 </tr>
             }
@@ -48,7 +48,7 @@
 </table>
 
 @code {
-    List<IGrouping<string, (ServerSettingTemplate, ServerSetting, string)>> ConfigData;
+    List<IGrouping<string, (ServerSettingAttribute, ServerSettingValue, string)>> ConfigData;
     DiscordGuild Guild;
 
     protected override void OnInitialized()

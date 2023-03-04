@@ -3,6 +3,7 @@ using System;
 using Icarus;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Icarus.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230304221007_AdjustFlagInfo")]
+    partial class AdjustFlagInfo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -144,9 +146,9 @@ namespace Icarus.Migrations
                     b.ToTable("Member");
                 });
 
-            modelBuilder.Entity("Icarus.Models.ServerSettingValue", b =>
+            modelBuilder.Entity("Icarus.Models.ServerSetting", b =>
                 {
-                    b.Property<int>("ServerSettingValueId")
+                    b.Property<int>("ServerSettingId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
@@ -165,11 +167,11 @@ namespace Icarus.Migrations
                     b.Property<string>("Value")
                         .HasColumnType("longtext");
 
-                    b.HasKey("ServerSettingValueId");
+                    b.HasKey("ServerSettingId");
 
                     b.HasIndex("SetByMemberId");
 
-                    b.ToTable("ServerSettingValue");
+                    b.ToTable("ServerSetting");
                 });
 
             modelBuilder.Entity("Icarus.Models.Tag", b =>
@@ -227,7 +229,7 @@ namespace Icarus.Migrations
                     b.Navigation("Filter");
                 });
 
-            modelBuilder.Entity("Icarus.Models.ServerSettingValue", b =>
+            modelBuilder.Entity("Icarus.Models.ServerSetting", b =>
                 {
                     b.HasOne("Icarus.Models.Member", "SetBy")
                         .WithMany()

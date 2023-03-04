@@ -19,14 +19,14 @@ namespace Icarus
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            //builder.WebHost.ConfigureKestrel(options =>
-            //{
-            //    options.ConfigureEndpointDefaults(listenOptions =>
-            //    {
-            //        listenOptions.
-            //    });
-            //});
-            builder.Configuration.AddJsonFile(args[0], optional: false, reloadOnChange: false);
+            if (args[0] == "--applicationName")
+            {
+                builder.Configuration.AddJsonFile("config.json", optional: false, reloadOnChange: false);
+            }
+            else
+            {
+                builder.Configuration.AddJsonFile(args[0], optional: false, reloadOnChange: false);
+            }
 
             Extensions.VersionText = builder.Configuration["versionText"];
 
