@@ -58,7 +58,7 @@ namespace Icarus
                         var member = guild.Members.FirstOrDefault(m => m.Key.ToString() == id).Value;
                         var manager = member.Permissions.HasFlag(DSharpPlus.Permissions.ManageGuild);
 
-                        DiscordBotService.Instance.Logger.LogError("DEBUG - Detected Sign In: " + user.GetString("id"));
+                        DiscordBotService.Instance.Logger.LogError("DEBUG - Detected Sign In: {userId}", user.GetString("id"));
 
                         return manager ? "Manager" : "";
                     });

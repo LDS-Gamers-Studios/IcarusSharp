@@ -14,47 +14,59 @@
 
 <h1>Guild Settings</h1>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Value</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var group in ConfigData)
-        {
-            <tr>
-                <td colspan="5"><h3>@group.Key</h3></td>
-            </tr>
+@foreach (var group in ConfigData)
+{
+    <h3>@group.Key</h3>
             
+    <table class="table" width="500">
+        <thead>
+            <tr>
+                <th width="250">Name</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
             @foreach (var data in group)
             {
                 <tr>
-                    <td><span class="space-right oi @(
-                            data.Item1.Type == ServerSettingType.Channel ? "oi-chat" :
-                            data.Item1.Type == ServerSettingType.Role ? "oi-people" :
-                            data.Item1.Type == ServerSettingType.User ? "oi-person" :
-                            data.Item1.Type == ServerSettingType.Text ? "oi-align-left" :
-                            data.Item1.Type == ServerSettingType.Decimal ? "oi-calculator" : ""
-                        )" aria-hidden="true"></span> @data.Item1.Name</td>
+                    <td width="250">
+                        <span class="material-symbols-outlined nav-link-icon">
+                                @TypeIconMap[data.Item1.Type]
+                        </span>
+                        <span>@data.Item1.Name</span><br>
+                        <span class="description">@data.Item1.Description</span>
+                    </td>
                     <td>
-                        <input class="@(data.Item3 is not null ? "goodBorder" : "badBorder")" type="text" id="input-@data.Item1.Name" name="input-@data.Item1.Name" value="@data.Item2?.Value" @oninput="(e) => OnInput(e, data.Item1.Key)"/>
+                        <span class="material-symbols-outlined nav-link-icon @(data.Item3 is null ? "bad" : "good")">
+                            @(data.Item3 is null ? "cancel" : "check")
+                        </span>
+                        <input type="text" id="input-@data.Item1.Name" name="input-@data.Item1.Name"
+                            value="@data.Item2?.Value" @oninput="(e) => OnInput(e, data.Item1.Key)"/><br>
+                        <span class="description">@data.Item3</span>
                     </td>
                 </tr>
             }
-        }
-    </tbody>
-</table>
+        </tbody>
+    </table>
+}
 
 @code {
     List<IGrouping<string, (ServerSettingAttribute, ServerSettingValue, string)>> ConfigData;
-    DiscordGuild Guild;
+
+    Dictionary<ServerSettingType, string> TypeIconMap = new()
+    {
+        [ServerSettingType.Channel] = "numbers",
+        [ServerSettingType.Role] = "group",
+        [ServerSettingType.User] = "person",
+        [ServerSettingType.Integer] = "123",
+        [ServerSettingType.Decimal] = "123",
+        [ServerSettingType.Text] = "abc",
+        [ServerSettingType.ChannelCollection] = "library_books",
+    };
 
     protected override void OnInitialized()
     {
         ConfigData = ServerSettingExtensions.LoadConfigValues(DataContext, Bot, Config);
-        Guild = Bot.Client.Guilds[ulong.Parse(Config["discord:guild"])];
     }
 
     void OnInput(ChangeEventArgs e, string key)

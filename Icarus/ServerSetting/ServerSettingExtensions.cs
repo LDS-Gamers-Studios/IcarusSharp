@@ -44,13 +44,13 @@ namespace Icarus.ServerSetting
 
         public static string Preview(string key, string value, DiscordGuild guild)
         {
-            if (value is null) { return null; }
+            if (value is null || value.Trim() == "") { return null; }
 
             var t = ServerSettings.First(t => t.Key == key);
 
             if (t.Type == ServerSettingType.Text)
             {
-                return value;
+                return "";
             }
             else if (t.Type == ServerSettingType.Decimal)
             {
@@ -88,6 +88,19 @@ namespace Icarus.ServerSetting
                 }
 
                 return "@" + guild.Members.FirstOrDefault(c => c.Key.ToString() == value).Value.Username;
+            }
+            else if (t.Type == ServerSettingType.ChannelCollection)
+            {
+                var ids = value.Split(',');
+                var o = new List<string>();
+                foreach (var id in ids)
+                {
+                    if (guild.Channels.Any(c => c.Key.ToString() == id))
+                    {
+                        o.Add("#" + guild.Channels.FirstOrDefault(c => c.Key.ToString() == id).Value.Name);
+                    }
+                }
+                return string.Join(", ", o);
             }
 
             return null;
@@ -128,9 +141,6 @@ namespace Icarus.ServerSetting
             {
                 Key = key,
                 Value = value,
-                SetBy = data.Member.First(),
-                UpdatedAt = DateTime.Now,
-                Note = "",
             };
             data.ServerSettingValue.Add(setting);
             data.SaveChanges();
@@ -141,9 +151,7 @@ namespace Icarus.ServerSetting
             var currentValue = data.ServerSettingValue.FirstOrDefault(s => s.Key == SettingKeys[setting]);
             if (currentValue is null) { return null; }
             var guild = DiscordBotService.Instance.Client.Guilds[ulong.Parse(DiscordBotService.Configuration["discord:guild"])];
-            var channelExists = guild.Channels.Any(c => c.Key.ToString() == currentValue.Value);
-            if (!channelExists) { return null; }
-            return guild.Channels.FirstOrDefault(c => c.Key.ToString() == currentValue.Value).Value;
+            return guild.Channels.Select(c => c.Value).FirstOrDefault(c => c.Id.ToString() == currentValue.Value);
         }
 
         public static DiscordRole Config_Role(this DataContext data, ServerSettings setting)
@@ -151,9 +159,7 @@ namespace Icarus.ServerSetting
             var currentValue = data.ServerSettingValue.FirstOrDefault(s => s.Key == SettingKeys[setting]);
             if (currentValue is null) { return null; }
             var guild = DiscordBotService.Instance.Client.Guilds[ulong.Parse(DiscordBotService.Configuration["discord:guild"])];
-            var roleExists = guild.Roles.Any(c => c.Key.ToString() == currentValue.Value);
-            if (!roleExists) { return null; }
-            return guild.Roles.FirstOrDefault(c => c.Key.ToString() == currentValue.Value).Value;
+            return guild.Roles.Select(r => r.Value).FirstOrDefault(r => r.Id.ToString() == currentValue.Value);
         }
 
         public static DiscordMember Config_Member(this DataContext data, ServerSettings setting)
@@ -161,9 +167,7 @@ namespace Icarus.ServerSetting
             var currentValue = data.ServerSettingValue.FirstOrDefault(s => s.Key == SettingKeys[setting]);
             if (currentValue is null) { return null; }
             var guild = DiscordBotService.Instance.Client.Guilds[ulong.Parse(DiscordBotService.Configuration["discord:guild"])];
-            var memberExists = guild.Members.Any(c => c.Key.ToString() == currentValue.Value);
-            if (!memberExists) { return null; }
-            return guild.Members.FirstOrDefault(c => c.Key.ToString() == currentValue.Value).Value;
+            return guild.Members.Select(m => m.Value).FirstOrDefault(m => m.Id.ToString() == currentValue.Value);
         }
 
         public static string Config_Text(this DataContext data, ServerSettings setting)
@@ -185,6 +189,14 @@ namespace Icarus.ServerSetting
             var currentValue = data.ServerSettingValue.FirstOrDefault(s => s.Key == SettingKeys[setting]);
             if (currentValue is null) { return null; }
             return int.Parse(currentValue.Value);
+        }
+
+        public static List<DiscordChannel> Config_ChannelCollection(this DataContext data, ServerSettings setting)
+        {
+            var currentValue = data.ServerSettingValue.FirstOrDefault(s => s.Key == SettingKeys[setting]);
+            if (currentValue is null) { return new(); }
+            var guild = DiscordBotService.Instance.Client.Guilds[ulong.Parse(DiscordBotService.Configuration["discord:guild"])];
+            return guild.Channels.Select(c => c.Value).Where(c => currentValue.Value.Split(',').Contains(c.Id.ToString())).ToList();
         }
     }
 }

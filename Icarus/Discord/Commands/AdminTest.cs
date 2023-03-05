@@ -15,17 +15,17 @@ namespace Icarus.Discord.Commands
             await ctx.DeferAsync();
 
             var e = ctx.IcarusEmbed()
-                .WithTitle("Cake Day Members");
+                .WithTitle("RP Allowed Channels");
 
-            var members = DataContext.Config_Integer(ServerSettings.Management_CakeDayMembers);
-            if (members is null)
+            var channels = DataContext.Config_ChannelCollection(ServerSettings.Terra_RPAllowedChannels);
+            if (channels.Count == 0)
             {
-                e = e.WithDescription("No member count is set.")
+                e = e.WithDescription("No channels RP allowed.")
                     .WithColor(DiscordColor.Yellow);
             }
             else
             {
-                e = e.WithDescription($"Member count is set to {members}.");
+                e = e.WithDescription($"RP allowed channels: {string.Join(",", channels.Select(c => c.Mention))}");
             }
 
             await ctx.EditResponseAsync(e);

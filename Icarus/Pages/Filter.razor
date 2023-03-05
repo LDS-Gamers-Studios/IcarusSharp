@@ -1,0 +1,74 @@
+﻿@page "/filter"
+@attribute [Authorize(Roles = "Manager")]
+
+@using DSharpPlus.Entities;
+@using Icarus.Discord;
+@using Icarus.ServerSetting;
+@using Icarus.Models
+
+@inject DataContext DataContext
+
+<PageTitle>Mod Flag Filter</PageTitle>
+
+<h1>Mod Flag Filter</h1>
+
+@if (!ChannelsConfigured)
+{
+    <div>
+        You must configure Mod Flags and Mod Logs in settings first.
+    </div>
+    return;
+}
+
+<div class="tab-list">
+    @foreach (var t in Tabs)
+    {
+        <div class="tab @(t.name == CurrentTab ? "active" : "")" @onclick="(e) => CurrentTab = t.name">
+            <span class="tab-icon">
+                <span class="material-symbols-outlined nav-link-icon">
+                    @t.icon
+                </span></span>
+            <span class="tab-name">@t.name</span>
+        </div>
+    }
+</div>
+
+@if (CurrentTab == "Adjust")
+{
+    <span class="description">@Message</span>
+    <input type="text" @bind-value="FilterValue"/>
+    <button style="width: 75px;" @onclick="AddFilterClick">Add</button>
+    <button style="width: 75px;">Remove</button>
+    <div>test</div>
+}
+
+@code {
+    string Message;
+
+    public string CurrentTab;
+    public List<(string name, string icon)> Tabs = new()
+    {
+        ("Adjust", "tune"),
+        ("Redirect", "call_split"),
+        ("List", "format_list_bulleted"),
+    };
+
+    bool ChannelsConfigured = true;
+
+    string FilterValue;
+
+    protected override void OnInitialized()
+    {
+        if (DataContext.Config_Channel(ServerSettings.Mod_ModFlags) is null || DataContext.Config_Channel(ServerSettings.Mod_ModLogs) is null)
+        {
+            ChannelsConfigured = false;
+        }
+
+        CurrentTab = Tabs[0].name;
+    }
+
+    void AddFilterClick()
+    {
+        
+    }
+}

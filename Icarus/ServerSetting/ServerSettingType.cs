@@ -9,6 +9,7 @@ namespace Icarus.ServerSetting
         User,
         Text,
         Decimal,
-        Integer
+        Integer,
+        ChannelCollection
     }
 }
