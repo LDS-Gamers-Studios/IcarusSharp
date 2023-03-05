@@ -8,8 +8,6 @@ namespace Icarus.Models
         public FilterType Type { get; set; }
         public string FilterText { get; set; }
         public string FilterTextConverted { get; set; }
-        public Member AddedBy { get; set; }
-        public DateTime AddTime { get; set; }
 
         public List<FilterException> FilterExceptions { get; set; }
     }

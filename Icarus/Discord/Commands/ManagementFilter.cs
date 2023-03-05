@@ -34,8 +34,6 @@ namespace Icarus.Discord.Commands
                 {
                     FilterText = filterText,
                     Type = type,
-                    AddedBy = DataContext.IcarusMember(ctx),
-                    AddTime = DateTime.Now,
                     FilterTextConverted = Utility.FilterConvert(filterText),
                 };
 

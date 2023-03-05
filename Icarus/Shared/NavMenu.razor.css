@@ -1,99 +1,70 @@
-.navbar-toggler {
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-.top-row {
-    height: 3.5rem;
-    background-color: rgba(0,0,0,0.4);
-}
-
-.navbar-brand {
-    font-size: 1.1rem;
-    color: white;
+.nav-menu {
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
 }
 
-.oi {
-    width: 2rem;
-    font-size: 1.1rem;
-    vertical-align: text-top;
-    top: -2px;
+.logo-parent {
+    text-align: center;
+    padding: 20px;
 }
 
-.nav-item {
-    font-size: 0.9rem;
-    padding-bottom: 0.5rem;
+.logo {
+    margin: auto;
 }
 
-.nav-item:first-of-type {
-    padding-top: 1rem;
+.nav-link-row {
+    margin: auto;
+    margin-top: 12px;
+    margin-bottom: 12px;
+    margin-left: 20px;
 }
 
-.nav-item:last-of-type {
-    padding-bottom: 1rem;
+.nav-link-text, .nav-link-icon {
+    color: #9F9F9F;
+    vertical-align: middle;
 }
 
-.nav-item ::deep a {
-    color: white;
-    border-radius: 4px;
-    height: 3rem;
-    display: flex;
-    align-items: center;
-    line-height: 3rem;
+.nav-link-text {
+    margin-left: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 24px;
 }
 
-.nav-item ::deep a.active {
-    background-color: rgba(255,255,255,0.4);
-    color: white;
+.active > .nav-link-row > .nav-link-icon {
+    color: #F89A22;
 }
 
-.nav-item ::deep a:hover {
-    background-color: rgba(255,255,255,.2);
+.active > .nav-link-row > .nav-link-text {
     color: white;
 }
 
-@media (min-width: 641px) {
-    .navbar-toggler {
-        display: none;
-    }
-
-    .collapse {
-        /* Never collapse the sidebar for wide screens */
-        display: block;
-    }
+.nav-link:hover > .nav-link-row > .nav-link-text {
+    color: white;
 }
 
-.pfp {
+hr {
+    margin: 12px 20px 12px 20px;
+    border-color: #9F9F9F;
+}
+
+.nav-link-row-bottom {
+    margin: auto;
+    margin-bottom: 25px;
+    margin-left: 20px;
+}
+
+.nav-link:hover > .nav-link-row-bottom > .nav-link-text {
+    color: white;
+}
+
+.user-avatar {
+    vertical-align: middle;
     border-radius: 50%;
-    margin-left: 0.7rem;
-    margin-right: 0.2rem;
 }
 
 .username {
-    color: white;
-}
-
-.grouping {
-    color: white;
-    margin: auto;
-    text-align: center;
-}
-
-.grouping-inner {
-    font-size: 1.1rem;
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-}
-
-.grouping-inner:before,
-.grouping-inner:after {
-    content: "";
-    flex: 1 1;
-    border-bottom: 2px solid white;
-    margin: auto;
-    margin-left: .5rem;
-    margin-right: .5rem;
+    vertical-align: middle;
+    margin-left: 10px;
+    color: #9F9F9F;
 }

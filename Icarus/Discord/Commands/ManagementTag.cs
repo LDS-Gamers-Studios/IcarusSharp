@@ -49,8 +49,6 @@ namespace Icarus.Discord.Commands
                 if (content is not null) { content = content.Replace("{nl}", "\n"); }
                 DataContext.Tag.Add(new Tag()
                 {
-                    CreatedBy = DataContext.IcarusMember(ctx),
-                    CreatedAt = DateTime.Now,
                     AttachmentURL = attachment?.Url,
                     Content = content,
                     IsEmbed = embed,
