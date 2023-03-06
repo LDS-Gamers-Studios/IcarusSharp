@@ -13,6 +13,7 @@ namespace Icarus.Discord
     {
         public static DiscordBotService Instance { get; private set; }
         public static IConfiguration Configuration { get; private set; }
+        public static DiscordGuild Guild => Instance.Client.Guilds[ulong.Parse(Configuration["discord:guild"])];
 
         public readonly DiscordClient Client;
         public DateTime StartTime;

@@ -15,11 +15,6 @@ a:active {
     text-decoration: none;
 }
 
-.material-symbols-outlined {
-    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 40;
-    vertical-align: middle;
-}
-
 table {
     border-spacing: 0px;
 }
@@ -95,6 +90,10 @@ tbody tr:nth-child(odd) {
     color: #9F9F9F;
 }
 
+.tab-name {
+    font-size: 14px;
+}
+
 .tab.active > .tab-name {
     color: black;
 }
@@ -114,4 +113,10 @@ button {
     border: 1px solid #F89A22;
     height: 40px;
     cursor: pointer;
+}
+
+select {
+    border-radius: 4px;
+    height: 40px;
+    width: 100px;
 }

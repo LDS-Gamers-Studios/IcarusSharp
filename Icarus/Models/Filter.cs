@@ -10,6 +10,7 @@ namespace Icarus.Models
         public string FilterTextConverted { get; set; }
 
         public List<FilterException> FilterExceptions { get; set; }
+        public List<FilterChannelCondition> FilterChannelConditions { get; set; }
     }
 
     public enum FilterType

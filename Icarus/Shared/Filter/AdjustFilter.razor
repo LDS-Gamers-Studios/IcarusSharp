@@ -1,0 +1,278 @@
+﻿@using Icarus.Discord.Commands;
+@using Icarus.Discord;
+@using Icarus.Models;
+@using Icarus.ServerSetting;
+
+@inject DataContext DataContext
+
+<h3>Filter</h3>
+<span class="description">@Message</span>
+<br />
+<input type="text" @bind-value="FilterValue" />
+<select @bind="SelectedFilterType" style="width: 195px;">
+    @foreach (var f in Enum.GetValues(typeof(FilterType)))
+    {
+        <option value="@f.ToString()">@f.ToString()</option>
+    }
+</select>
+<button style="width: 75px;" @onclick="AddFilterClick">Add</button>
+<button style="width: 75px;" @onclick="RemoveFilterClick">Remove</button>
+
+<h4>Filter Exception</h4>
+<span class="description">@Message2</span>
+<br />
+<input type="text" @bind-value="FilterValue2" />
+<input type="text" @bind-value="FilterExceptionValue" />
+<button style="width: 75px;" @onclick="AddFilterExceptionClick">Add</button>
+<button style="width: 75px;" @onclick="RemoveFilterExceptionClick">Remove</button>
+
+<h4>Filter Channel Condition</h4>
+<span class="description">@Message3</span>
+<br />
+<input type="text" @bind-value="FilterValue3" />
+<input type="text" @bind-value="FilterChannelId" />
+<button style="width: 75px;" @onclick="AddFilterChannelClick">Add</button>
+<button style="width: 75px;" @onclick="RemoveFilterChannelClick">Remove</button>
+
+<h4>Filter Channel Redirects</h4>
+<span class="description">@Message4</span>
+<br />
+<input type="text" @bind-value="RedirectSourceId" />
+<input type="text" @bind-value="RedirectDestinationId" />
+<button style="width: 75px;" @onclick="AddFilterChannelRedirectClick">Add</button>
+<button style="width: 75px;" @onclick="RemoveFilterChannelRedirectClick">Remove</button>
+
+@code {
+    string Message;
+    string FilterValue;
+    FilterType SelectedFilterType;
+
+    string Message2;
+    string FilterValue2;
+    string FilterExceptionValue;
+
+    string Message3;
+    string FilterValue3;
+    string FilterChannelId;
+
+    string Message4;
+    string RedirectSourceId;
+    string RedirectDestinationId;
+
+    void AddFilterClick()
+    {
+        if (FilterValue is null || FilterValue == "") { Message = "Please input a value."; return; }
+
+        FilterValue = FilterValue.ToLower();
+
+        var filter = new Models.Filter()
+            {
+                FilterText = FilterValue,
+                Type = SelectedFilterType,
+                FilterTextConverted = Utility.FilterConvert(FilterValue),
+            };
+
+        var existingFilter = DataContext.Filter.FirstOrDefault(f => f.FilterText == FilterValue || f.FilterTextConverted == filter.FilterTextConverted);
+
+        var addedUpdated = "Added";
+        if (existingFilter is not null)
+        {
+            var exCount = DataContext.Entry(existingFilter).Collection(f => f.FilterExceptions).Query().Count();
+
+            if (existingFilter.Type == SelectedFilterType)
+            {
+                Message = "That text is already in the filter with that type.";
+                return;
+            }
+            else
+            {
+                DataContext.Remove(existingFilter);
+                addedUpdated = "Updated";
+            }
+        }
+
+        DataContext.Add(filter);
+        DataContext.SaveChanges();
+
+        Message = $"{addedUpdated} `{FilterValue}` as {SelectedFilterType}.";
+        FilterValue = "";
+    }
+
+    void RemoveFilterClick()
+    {
+        if (FilterValue is null || FilterValue == "") { Message = "Please input a value."; return; }
+        FilterValue = FilterValue.ToLower();
+        var existingFilter = DataContext.Filter.FirstOrDefault(f => f.FilterText == FilterValue || f.FilterTextConverted == Utility.FilterConvert(FilterValue));
+        if (existingFilter is null)
+        {
+            Message = "A filter with that text does not exist.";
+            return;
+        }
+
+        DataContext.FilterException.ToList().Where(f => f.Filter == existingFilter).ToList().ForEach(f => DataContext.FilterException.Remove(f));
+        DataContext.FilterChannelCondition.ToList().Where(f => f.Filter == existingFilter).ToList().ForEach(f => DataContext.FilterChannelCondition.Remove(f));
+
+        DataContext.Remove(existingFilter);
+        DataContext.SaveChanges();
+
+        Message = $"Removed `{FilterValue}` from the filter.";
+        FilterValue = "";
+    }
+
+    void AddFilterExceptionClick()
+    {
+        if (FilterValue2 is null || FilterValue2 == "" || FilterExceptionValue is null || FilterExceptionValue == "") { Message2 = "Please input a value."; return; }
+
+        var existingFilter = DataContext.Filter.FirstOrDefault(f => f.FilterText == FilterValue2 || f.FilterTextConverted == Utility.FilterConvert(FilterValue2));
+        if (existingFilter is null)
+        {
+            Message2 = "A filter with that text does not exist.";
+            return;
+        }
+
+        var existingException = DataContext.FilterException.FirstOrDefault(e => e.Filter == existingFilter && e.ExceptionText == FilterExceptionValue);
+        if (existingException is not null)
+        {
+            Message2 = "That exception already exists.";
+            return;
+        }
+
+        var ex = new FilterException()
+            {
+                ExceptionText = FilterExceptionValue,
+                Filter = existingFilter,
+            };
+
+        DataContext.FilterException.Add(ex);
+        DataContext.SaveChanges();
+
+        Message2 = $"Added `{FilterExceptionValue}` as an exception to `{existingFilter.FilterText}`.";
+        FilterExceptionValue = "";
+    }
+
+    void RemoveFilterExceptionClick()
+    {
+        if (FilterValue2 is null || FilterValue2 == "" || FilterExceptionValue is null || FilterExceptionValue == "") { Message2 = "Please input a value."; return; }
+        var existingFilter = DataContext.Filter.FirstOrDefault(f => f.FilterText == FilterValue2 || f.FilterTextConverted == Utility.FilterConvert(FilterValue2));
+        if (existingFilter is null)
+        {
+            Message2 = "A filter with that text does not exist.";
+            return;
+        }
+
+        var existingException = DataContext.FilterException.FirstOrDefault(e => e.Filter == existingFilter && e.ExceptionText == FilterExceptionValue);
+        if (existingException is null)
+        {
+            Message2 = "That exception does not exist.";
+            return;
+        }
+
+        DataContext.Remove(existingException);
+        DataContext.SaveChanges();
+        Message2 = $"Removed `{FilterExceptionValue}` as an exception from `{existingFilter.FilterText}`.";
+    }
+
+    void AddFilterChannelClick()
+    {
+        if (FilterValue3 is null || FilterValue3 == "" || FilterChannelId is null || FilterChannelId == "" || !ulong.TryParse(FilterChannelId, out var channelId)) { Message3 = "Please input a value."; return; }
+
+        var existingFilter = DataContext.Filter.FirstOrDefault(f => f.FilterText == FilterValue3 || f.FilterTextConverted == Utility.FilterConvert(FilterValue3));
+        if (existingFilter is null)
+        {
+            Message3 = "A filter with that text does not exist.";
+            return;
+        }
+
+        var existingChannel = DataContext.FilterChannelCondition.FirstOrDefault(e => e.Filter == existingFilter && e.ChannelId == channelId);
+        if (existingChannel is not null)
+        {
+            Message3 = "That channel condition already exists.";
+            return;
+        }
+
+        if (!DiscordBotService.Guild.Channels.Any(c => c.Key == channelId))
+        {
+            Message3 = "That channel doesn't exist.";
+            return;
+        }
+
+        var ex = new FilterChannelCondition()
+            {
+                Filter = existingFilter,
+                ChannelId = channelId
+            };
+
+        DataContext.FilterChannelCondition.Add(ex);
+        DataContext.SaveChanges();
+
+        Message3 = $"Added `{channelId}` as a channel condition to `{existingFilter.FilterText}`.";
+        FilterChannelId = "";
+    }
+
+    void RemoveFilterChannelClick()
+    {
+        if (FilterValue3 is null || FilterValue3 == "" || FilterChannelId is null || FilterChannelId == "" || !ulong.TryParse(FilterChannelId, out var channelId)) { Message3 = "Please input a value."; return; }
+        var existingFilter = DataContext.Filter.FirstOrDefault(f => f.FilterText == FilterValue3 || f.FilterTextConverted == Utility.FilterConvert(FilterValue3));
+        if (existingFilter is null)
+        {
+            Message3 = "A filter with that text does not exist.";
+            return;
+        }
+
+        var existingChannel = DataContext.FilterChannelCondition.FirstOrDefault(e => e.Filter == existingFilter && e.ChannelId == channelId);
+        if (existingChannel is null)
+        {
+            Message3 = "That channel condition does not exist.";
+            return;
+        }
+
+        DataContext.Remove(existingChannel);
+        DataContext.SaveChanges();
+        Message3 = $"Removed `{channelId}` as a channel condition from `{existingFilter.FilterText}`.";
+    }
+
+    void AddFilterChannelRedirectClick()
+    {
+        if (RedirectSourceId is null || RedirectSourceId == "" || RedirectDestinationId is null || RedirectDestinationId == "") { Message4 = "Please input a value."; return; }
+        var source = DiscordBotService.Guild.Channels.Any(c => c.Key.ToString() == RedirectSourceId);
+        var dest = DiscordBotService.Guild.Channels.Any(c => c.Key.ToString() == RedirectDestinationId);
+        if (!source || !dest)
+        {
+            Message4 = "Invalid channel.";
+            return;
+        }
+
+        var existing = DataContext.FilterChannelRedirect.FirstOrDefault(r => r.ChannelId.ToString() == RedirectSourceId || r.PostChannelId.ToString() == RedirectDestinationId);
+        if (existing is not null)
+        {
+            Message4 = "That redirect already exists.";
+            return;
+        }
+
+        var r = new FilterChannelRedirect()
+        {
+            ChannelId = ulong.Parse(RedirectSourceId),
+            PostChannelId = ulong.Parse(RedirectDestinationId),
+        };
+
+        DataContext.FilterChannelRedirect.Add(r);
+        DataContext.SaveChanges();
+        Message4 = $"Added redirect from {RedirectSourceId} to {RedirectDestinationId}";
+    }
+
+    void RemoveFilterChannelRedirectClick()
+    {
+        if (RedirectSourceId is null || RedirectSourceId == "" || RedirectDestinationId is null || RedirectDestinationId == "") { Message4 = "Please input a value."; return; }
+
+        var existing = DataContext.FilterChannelRedirect.FirstOrDefault(r => r.ChannelId.ToString() == RedirectSourceId || r.PostChannelId.ToString() == RedirectDestinationId);
+        if (existing is null)
+        {
+            Message4 = "That redirect does not exist.";
+            return;
+        }
+
+        DataContext.FilterChannelRedirect.Remove(existing);
+        DataContext.SaveChanges();
+        Message4 = $"Removed redirect.";
+    }
+}

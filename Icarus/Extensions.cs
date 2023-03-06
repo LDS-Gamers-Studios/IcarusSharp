@@ -107,5 +107,19 @@ namespace Icarus
             ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent(content));
         public static Task<DiscordMessage> EditResponseAsync(this BaseContext ctx, DiscordEmbedBuilder e) =>
             ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(e));
+
+        public static List<int> AllIndexesOf(this string str, string value)
+        {
+            if (string.IsNullOrEmpty(value))
+                throw new ArgumentException("the string to find may not be empty", nameof(value));
+            List<int> indexes = new();
+            for (int index = 0; ; index += value.Length)
+            {
+                index = str.IndexOf(value, index);
+                if (index == -1)
+                    return indexes;
+                indexes.Add(index);
+            }
+        }
     }
 }

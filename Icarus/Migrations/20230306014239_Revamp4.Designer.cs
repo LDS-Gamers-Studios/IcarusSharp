@@ -3,6 +3,7 @@ using System;
 using Icarus;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Icarus.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230306014239_Revamp4")]
+    partial class Revamp4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -56,23 +58,6 @@ namespace Icarus.Migrations
                     b.HasIndex("FilterId");
 
                     b.ToTable("FilterChannelCondition");
-                });
-
-            modelBuilder.Entity("Icarus.Models.FilterChannelRedirect", b =>
-                {
-                    b.Property<int>("FilterChannelRedirectId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<ulong>("ChannelId")
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<ulong>("PostChannelId")
-                        .HasColumnType("bigint unsigned");
-
-                    b.HasKey("FilterChannelRedirectId");
-
-                    b.ToTable("FilterChannelRedirect");
                 });
 
             modelBuilder.Entity("Icarus.Models.FilterException", b =>

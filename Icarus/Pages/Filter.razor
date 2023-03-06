@@ -3,8 +3,10 @@
 
 @using DSharpPlus.Entities;
 @using Icarus.Discord;
+@using Icarus.Discord.Commands;
 @using Icarus.ServerSetting;
 @using Icarus.Models
+@using Icarus.Shared.Filter
 
 @inject DataContext DataContext
 
@@ -20,42 +22,96 @@
     return;
 }
 
+<AdjustFilter />
+
+<br />
+<br />
+
 <div class="tab-list">
-    @foreach (var t in Tabs)
+    @foreach (var t in ViewTabs)
     {
-        <div class="tab @(t.name == CurrentTab ? "active" : "")" @onclick="(e) => CurrentTab = t.name">
+        <div class="tab @(t.name == CurrentViewTab ? "active" : "")" @onclick="(e) => CurrentViewTab = t.name">
             <span class="tab-icon">
                 <span class="material-symbols-outlined nav-link-icon">
                     @t.icon
-                </span></span>
+                </span>
+            </span>
             <span class="tab-name">@t.name</span>
         </div>
     }
 </div>
 
-@if (CurrentTab == "Adjust")
+@if (CurrentViewTab == "Filters")
 {
-    <span class="description">@Message</span>
-    <input type="text" @bind-value="FilterValue"/>
-    <button style="width: 75px;" @onclick="AddFilterClick">Add</button>
-    <button style="width: 75px;">Remove</button>
-    <div>test</div>
+    foreach (var filter in DataContext.Filter)
+    {
+        <div>@filter.FilterText <p class="description">@filter.Type - @filter.FilterTextConverted</p></div>
+    }
+}
+else if (CurrentViewTab == "Exceptions")
+{
+    DataContext.FilterException.ToList();
+    foreach (var filter in DataContext.Filter)
+    {
+        if (filter.FilterExceptions is null || filter.FilterExceptions.Count == 0) { continue; }
+        <div>
+            @filter.FilterText
+            <p class="description">@filter.Type - @filter.FilterTextConverted</p>
+            <div class="description" style="margin-left: 20px;">
+                @foreach (var ex in filter.FilterExceptions)
+                {
+                    <p>@ex.ExceptionText</p>
+                }
+            </div>
+        </div>
+    }
+}
+else if (CurrentViewTab == "Channel Conditions")
+{
+    DataContext.FilterChannelCondition.ToList();
+    foreach (var filter in DataContext.Filter)
+    {
+        if (filter.FilterChannelConditions is null || filter.FilterChannelConditions.Count == 0) { continue; }
+        <div>
+            @filter.FilterText
+            <p class="description">@filter.Type - @filter.FilterTextConverted</p>
+            <div class="description" style="margin-left: 20px;">
+                @foreach (var ex in filter.FilterChannelConditions)
+                {
+                    var channel = DiscordBotService.Guild.Channels.Select(c => c.Value).FirstOrDefault(c => c.Id == ex.ChannelId);
+                    if (channel is null) { continue; }
+                    <p>@ex.ChannelId - @channel.Name</p>
+                }
+            </div>
+        </div>
+    }
+}
+else if (CurrentViewTab == "Redirects")
+{
+    foreach (var redirect in DataContext.FilterChannelRedirect)
+    {
+        var source = DiscordBotService.Guild.Channels.Select(c => c.Value).FirstOrDefault(c => c.Id == redirect.ChannelId);
+        var dest = DiscordBotService.Guild.Channels.Select(c => c.Value).FirstOrDefault(c => c.Id == redirect.PostChannelId);
+
+        if (source is null || dest is null) { continue; }
+        <div>
+            #@source.Name (@source.Id) -> #@dest.Name (@dest.Id)
+        </div>
+    }
 }
 
 @code {
-    string Message;
-
-    public string CurrentTab;
-    public List<(string name, string icon)> Tabs = new()
-    {
-        ("Adjust", "tune"),
-        ("Redirect", "call_split"),
-        ("List", "format_list_bulleted"),
-    };
-
     bool ChannelsConfigured = true;
 
-    string FilterValue;
+    public string CurrentViewTab;
+    public List<(string name, string icon)> ViewTabs = new()
+    {
+        ("None", "check_box_outline_blank"),
+        ("Filters", "warning"),
+        ("Exceptions", "strikethrough_s"),
+        ("Channel Conditions", "forum"),
+        ("Redirects", "call_split"),
+    };
 
     protected override void OnInitialized()
     {
@@ -64,11 +120,6 @@
             ChannelsConfigured = false;
         }
 
-        CurrentTab = Tabs[0].name;
-    }
-
-    void AddFilterClick()
-    {
-        
+        CurrentViewTab = ViewTabs[0].name;
     }
 }

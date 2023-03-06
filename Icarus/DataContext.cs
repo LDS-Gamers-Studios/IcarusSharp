@@ -13,6 +13,8 @@ namespace Icarus
         public DbSet<Flag> Flag { get; set; }
         public DbSet<Filter> Filter { get; set; }
         public DbSet<FilterException> FilterException { get; set; }
+        public DbSet<FilterChannelCondition> FilterChannelCondition { get; set; }
+        public DbSet<FilterChannelRedirect> FilterChannelRedirect { get; set; }
         public DbSet<ServerSettingValue> ServerSettingValue { get; set; }
 
         public DataContext(IConfiguration config)
